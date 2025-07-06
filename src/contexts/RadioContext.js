@@ -104,23 +104,33 @@ export function RadioProvider({ children }) {
     setPlaying(true);
   };
 
+  /* ── shuffle: keep audio playing whether turning ON or OFF ─── */
   const toggleShuffle = () => {
     setShuffle(s => {
       const on = !s;
+
       if (on && playlist.length > 1) {
         /* jump to a brand-new random track immediately */
         setCurrent(i => {
           let rand;
-          do { rand = Math.floor(Math.random() * playlist.length); } while (rand === i);
+          do {
+            rand = Math.floor(Math.random() * playlist.length);
+          } while (rand === i);
           return rand;
         });
-        setPlaying(true);           // ensure audio keeps playing
       }
+
       return on;
     });
+
+    /* guarantee playback continues after the toggle */
+    if (playlist.length) {
+      audioRef.current.play().catch(console.error);
+      setPlaying(true);
+    }
   };
 
-  /* ── expose state & controls to consumers ──────────────────── */
+  /* ── expose state & controls ───────────────────────────────── */
   const value = {
     playlist,
     track: playlist[current],
