@@ -1,0 +1,21 @@
+.radio-badge {
+  position: fixed;
+  bottom: 24px;          /* tuck into bottom-right corner */
+  right: 24px;
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  z-index: 800;          /* above page content, below hamburger */
+  cursor: pointer;
+  transition: transform .15s;
+}
+
+.radio-badge:hover { transform: scale(1.08); }
+
+.radio-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

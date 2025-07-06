@@ -1,0 +1,51 @@
+/* ------------ container ------------ */
+.forum-categories {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: Inter, sans-serif;
+}
+
+.forum-categories h1 {
+  font-size: 2rem;
+  margin: 0 0 1.5rem 0;
+  color: var(--success);           /* same green token you use for logo */
+}
+
+/* ------------ grid ------------ */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ------------ card ------------ */
+.category-card {
+  display: block;                 /* makes the <Link> fill entire tile */
+  background: color-mix(in srgb, var(--card) 95%, #fff 5%);   /* subtle tint */
+  border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+  border-radius: 14px;
+  padding: 1.3rem 1.1rem;
+  text-decoration: none;          /* remove blue underline */
+  transition: background .25s, border-color .25s, transform .25s;
+}
+
+.category-card:hover {
+  background: color-mix(in srgb, var(--card) 90%, #fff 10%);
+  border-color: color-mix(in srgb, var(--success) 40%, transparent);
+  transform: translateY(-3px);
+}
+
+.category-card h3 {
+  margin: 0 0 .45rem 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.category-card p {
+  margin: 0;
+  font-size: .88rem;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--text) 65%, transparent);
+}

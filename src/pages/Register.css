@@ -1,0 +1,112 @@
+/* === Pale-green backdrop === */
+.register-wrapper {
+  min-height: calc(100vh - 120px); /* navbar+footer approx. */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 4rem;
+  background: #f4fbf6;
+}
+
+/* === White card container === */
+.register-box {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  padding: 2rem 2.25rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.register-box h2 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+/* === Input fields === */
+.register-box input {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+/* === Avatar selection === */
+.avatar-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+/* === Divider line for "or" === */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
+
+/* === Google button === */
+.btn.google {
+  background: #fff;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn.google img {
+  width: 20px;
+  height: 20px;
+}
+
+/* === Green Sign Up Button === */
+.btn.w-full {
+  width: 100%;
+  padding: 0.75rem 0;
+  background: #005131;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn.w-full:disabled {
+  background: #005131;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* === Error Text === */
+.error {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* === Optional: Nav Sign Up Button === */
+.signup-btn, .btn.primary {
+  background: #005131 !important;
+  color: #fff !important;
+  border: none;
+}

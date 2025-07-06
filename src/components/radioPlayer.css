@@ -1,0 +1,126 @@
+/* src/components/radioPlayer.css */
+
+/* ───────────────────────────────────────────────────── */
+/* design tokens & globals                             */
+/* ───────────────────────────────────────────────────── */
+:root {
+  --primary: #000;     /* progress fill & active shuffle bg */
+  --soft:    #e9f0ed;  /* button background */
+  --radius:  14px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+/* ───────────────────────────────────────────────────── */
+/* main container & headings                            */
+/* ───────────────────────────────────────────────────── */
+.radio {
+  max-width: 900px;
+  margin: 2rem auto;
+}
+
+.radio h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* ───────────────────────────────────────────────────── */
+/* track info & cover art                               */
+/* ───────────────────────────────────────────────────── */
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meta h2 {
+  margin: 0 0 .25rem 0;
+  font-size: 1.25rem;
+}
+
+.meta p {
+  margin: 0 0 1rem 0;
+  color: #555;
+}
+
+.cover {
+  width: 230px;
+  height: 230px;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+/* ───────────────────────────────────────────────────── */
+/* generic button styles                                */
+/* ───────────────────────────────────────────────────── */
+.btn {
+  padding: .6rem 1.2rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--soft);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+
+.btn.secondary {
+  margin: 0 .25rem;
+  padding: .5rem 1rem;  /* slightly tigher */
+}
+
+/* hovered secondary when not active */
+.btn.secondary:not(.active):hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* active shuffle button */
+.btn.secondary.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* add the 🔀 icon in front of active shuffle */
+.btn.secondary.active::before {
+  content: "🔀 ";
+}
+
+/* ───────────────────────────────────────────────────── */
+/* progress bar                                         */
+/* ───────────────────────────────────────────────────── */
+.progress {
+  position: relative;
+  height: .5rem;
+  background: #d9e3de;
+  border-radius: var(--radius);
+  margin: 2rem 0 1.5rem;
+}
+
+.progress > span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  border-radius: var(--radius);
+}
+
+.progress small {
+  position: absolute;
+  right: 0;
+  top: -1.75rem;
+  font-size: .85rem;
+}
+
+/* ───────────────────────────────────────────────────── */
+/* action buttons (shuffle / prev / next)               */
+/* ───────────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .75rem;
+  margin-top: 1rem;
+}

@@ -1,0 +1,22 @@
+.theme-toggle{
+  font-size: 1.2rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: .25rem .5rem;
+  transition: transform .2s;
+}
+
+.theme-toggle:hover{
+  transform: scale(1.2);
+}
+/* src/components/ThemeToggle.css */
+.theme-toggle-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;   /* icon size */
+  cursor: pointer;
+  color: var(--text);   /* follows token */
+  transition: transform 0.25s;
+}
+.theme-toggle-btn:hover { transform: scale(1.15); }

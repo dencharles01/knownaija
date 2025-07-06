@@ -1,0 +1,52 @@
+/* StoriesGrid.css — final version */
+.stories-section {
+  background-size: 400px 400px;
+  background-repeat: repeat;
+  padding: 2.5rem 1rem;
+  color: #1d1d1d;
+}
+
+/* --- everything else unchanged --- */
+.stories-heading   { margin: 0 0 1.5rem; font-size: 2rem; font-weight: 700; text-align: center; letter-spacing: 0.5px; }
+.stories-grid      { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 1.5rem; }
+.story-card        { background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,.07); display:flex; flex-direction:column; transition:transform .2s ease; }
+.story-card:hover  { transform:translateY(-4px); }
+
+.cover-wrapper { width:100%; aspect-ratio:3/2; overflow:hidden; }
+.cover-img     { width:100%; height:100%; object-fit:cover; }
+
+.story-body  { padding:1rem 1rem 1.25rem; display:flex; flex-direction:column; flex:1; }
+.story-title { margin:0 0 .25rem; font-size:1.25rem; line-height:1.35; }
+.story-author{ margin:0 0 .75rem; font-size:.9rem; color:#555; }
+
+.story-tags  { margin-top:auto; margin-bottom:.75rem; }
+.tag-chip    { display:inline-block; margin:0 .35rem .35rem 0; padding:.25rem .6rem; font-size:.75rem; background:#f3f3f3; border-radius:999px; }
+
+.continue-btn      { align-self:flex-start; padding:.55rem 1.1rem; font-size:.85rem; background:#00704a; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+.continue-btn:hover{ background:#005f3e; }
+
+@media (max-width:480px){
+  .stories-heading{ font-size:1.6rem; }
+}
+/* StoriesGrid.css */
+.stories-heading {
+  margin: 0 0 1.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.5px;
+
+  /* inside fill  */
+  color: #063a12;
+
+  /* crisp white outline (WebKit) */
+  -webkit-text-stroke: 1px #fff;
+
+  /* cross-browser fallback outline */
+  text-shadow:
+    -1px -1px 0 #fff,
+     1px -1px 0 #fff,
+    -1px  1px 0 #fff,
+     1px  1px 0 #fff;
+}
+

@@ -1,0 +1,98 @@
+/* ==========  Thread list (ForumThreads)  =========================== */
+
+.thread-list-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+  font-family: Inter, sans-serif;
+}
+
+.page-title {
+  font-size: 1.9rem;
+  color: var(--text, #0f172a);
+  margin: 0 0 1.6rem;
+}
+
+/* ---------- UL reset ---------- */
+.thread-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ---------- card ---------- */
+.thread-card {
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 10px;
+  background: var(--card, #fff);
+  margin-bottom: 1.25rem;
+  transition: box-shadow .2s ease, transform .08s ease;
+}
+
+.thread-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  transform: translateY(-2px);
+}
+
+/* whole card is a link */
+.thread-link {
+  display: block;
+  padding: 1.4rem 1.6rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* title */
+.thread-title {
+  margin: 0 0 .55rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* meta row */
+.thread-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: .9rem;
+  color: #6b7280;               /* slate-500 */
+}
+
+.thread-meta .score   { color: #10b981; font-weight: 600; } /* green */
+.thread-meta .date    { margin-left: auto; }                /* push date right */
+
+/* ---------- loading helper ---------- */
+.loading {
+  text-align: center;
+  color: #6b7280;
+  margin-top: 3rem;
+}
+
+/* ---------- new-thread button ---------- */
+.new-thread-btn {
+  display: block;
+  margin: 2.5rem auto 0;
+  padding: 0.8rem 2.3rem;
+  background: #005131;          /* ← your requested colour */
+  color: #fff;
+  border: none;
+  border-radius: 22px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .25s;
+}
+
+.new-thread-btn:hover { opacity: .85; }
+
+/* ---------- mobile tweaks ---------- */
+@media (max-width: 620px) {
+  .thread-link  { padding: 1.2rem; }
+  .thread-title { font-size: 1.02rem; }
+}
+.page-title {
+  color: #116e49; /* Naija green */
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}

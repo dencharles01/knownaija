@@ -1,0 +1,50 @@
+/* ────────────────────────────
+   Notification Modal Overlay
+   ──────────────────────────── */
+.notif-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* ────────────────────────────
+   Notification Box
+   ──────────────────────────── */
+.notif-box {
+  background: #fff;
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  max-width: 420px;
+}
+
+/* Text inside the box */
+.notif-box p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #222;       /* darker, crisper */
+  line-height: 1.4;
+}
+
+/* OK button */
+.notif-box button {
+  background: #008751;   /* KnowNaija green */
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.notif-box button:hover {
+  background: #00663f;
+}

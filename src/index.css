@@ -1,0 +1,24 @@
+/* ==================================================================
+   GLOBAL RESET  (safe to leave theme-tokens to App.css)
+   ================================================================== */
+
+/* 1) Basic box-sizing reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* 2) Default body font & smoothing — NO colours here */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto',
+               'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+               'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 3) <code> blocks */
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+               monospace;
+}
