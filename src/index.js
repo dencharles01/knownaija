@@ -5,22 +5,20 @@ import { BrowserRouter } from "react-router-dom";
 
 import "./index.css";
 
-import App            from "./App";
+/* App root */
+import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
 /* context providers */
-import { ThemeProvider }  from "./contexts/ThemeContext";
-import { RadioProvider }  from "./contexts/RadioContext";   //  ← NEW
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { RadioProvider } from "./contexts/RadioContext";   // 🆕  global radio state
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <React.StrictMode>
-    {/* global audio lives here */}
     <RadioProvider>
-      {/* theme (dark / light) */}
       <ThemeProvider>
-        {/* router & the rest of the app */}
         <BrowserRouter>
           <App />
         </BrowserRouter>
