@@ -6,33 +6,43 @@ import {
   useState,
   useEffect,
   useCallback,
-} from "react";
+} from 'react';
 
 const RadioCtx = createContext(null);
 export const useRadio = () => useContext(RadioCtx);
 
 export function RadioProvider({ children }) {
-  /* Shared <audio> element */
+  /* ───────────────── shared <audio> element ───────────────── */
   const audioRef = useRef(new Audio());
 
-  /* State */
-  const [playlist, setPlaylist]   = useState([]);
-  const [current,  setCurrent]    = useState(0);
-  const [playing,  setPlaying]    = useState(false);
-  const [shuffle,  setShuffle]    = useState(false);
-  const [pct,      setPct]        = useState(0);
+  /* ───────────────── state ───────────────── */
+  const [playlist, setPlaylist] = useState([]);
+  const [current,  setCurrent]  = useState(0);
+  const [playing,  setPlaying]  = useState(false);
+  const [shuffle,  setShuffle]  = useState(false);
+  const [pct,      setPct]      = useState(0);
 
-  /* Load playlist once */
+  /* ── 1. load playlist once, then restore saved state ───────── */
   useEffect(() => {
-    fetch("/radio/playlist.json")
-      .then((r) => r.json())
-      .then(setPlaylist)
+    fetch('/radio/playlist.json')
+      .then(r => r.json())
+      .then(list => {
+        setPlaylist(list);
+
+        /** restore from localStorage (if within bounds) */
+        const saved = JSON.parse(localStorage.getItem('radioState') || '{}');
+        if (saved.current != null && saved.current < list.length) {
+          setCurrent(saved.current);
+        }
+        if (saved.shuffle != null) setShuffle(saved.shuffle);
+        if (saved.playing) setPlaying(true);   // triggers .play() later
+      })
       .catch(console.error);
   }, []);
 
-  /* ----------  NEXT helper (declare before effects that use it) ---------- */
+  /* ── helper: go to the next track (normal or shuffled) ─────── */
   const next = useCallback(() => {
-    setCurrent((i) => {
+    setCurrent(i => {
       const len = playlist.length;
       if (shuffle && len > 1) {
         let rand;
@@ -43,9 +53,8 @@ export function RadioProvider({ children }) {
     });
     setPlaying(true);
   }, [playlist, shuffle]);
-  /* ---------------------------------------------------------------------- */
 
-  /* Time-update & ended listeners */
+  /* ── 2. attach timeupdate / ended listeners once ───────────── */
   useEffect(() => {
     const audio = audioRef.current;
 
@@ -53,20 +62,20 @@ export function RadioProvider({ children }) {
       setPct((audio.currentTime / audio.duration) * 100 || 0);
 
     const onEnded = () => {
-      if (playlist.length) next();            // uses next declared above
+      if (playlist.length) next();
     };
 
-    audio.addEventListener("timeupdate", onTime);
-    audio.addEventListener("ended", onEnded);
+    audio.addEventListener('timeupdate', onTime);
+    audio.addEventListener('ended', onEnded);
 
     return () => {
       audio.pause();
-      audio.removeEventListener("timeupdate", onTime);
-      audio.removeEventListener("ended", onEnded);
+      audio.removeEventListener('timeupdate', onTime);
+      audio.removeEventListener('ended', onEnded);
     };
   }, [playlist.length, next]);
 
-  /* Swap source when track / play-state changes */
+  /* ── 3. change source whenever track / play-state changes ──── */
   useEffect(() => {
     if (!playlist.length) return;
 
@@ -79,19 +88,39 @@ export function RadioProvider({ children }) {
     }
   }, [current, playlist, playing]);
 
-  /* Playback controls */
+  /* ── 4. persist key state so refresh resumes playback ─────── */
+  useEffect(() => {
+    const state = { current, playing, shuffle };
+    localStorage.setItem('radioState', JSON.stringify(state));
+  }, [current, playing, shuffle]);
+
+  /* ── playback controls ─────────────────────────────────────── */
   const play   = () => { audioRef.current.play().catch(console.error); setPlaying(true); };
-  const pause  = () => { audioRef.current.pause();                    setPlaying(false); };
+  const pause  = () => { audioRef.current.pause();                     setPlaying(false); };
   const toggle = () => { playing ? pause() : play(); };
 
   const previous = () => {
-    setCurrent((i) => (i - 1 + playlist.length) % playlist.length);
+    setCurrent(i => (i - 1 + playlist.length) % playlist.length);
     setPlaying(true);
   };
 
-  const toggleShuffle = () => setShuffle((s) => !s);
+  const toggleShuffle = () => {
+    setShuffle(s => {
+      const on = !s;
+      if (on && playlist.length > 1) {
+        /* jump to a brand-new random track immediately */
+        setCurrent(i => {
+          let rand;
+          do { rand = Math.floor(Math.random() * playlist.length); } while (rand === i);
+          return rand;
+        });
+        setPlaying(true);           // ensure audio keeps playing
+      }
+      return on;
+    });
+  };
 
-  /* Expose state & controls */
+  /* ── expose state & controls to consumers ──────────────────── */
   const value = {
     playlist,
     track: playlist[current],
