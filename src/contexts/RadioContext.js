@@ -5,27 +5,24 @@ import {
   useRef,
   useState,
   useEffect,
-  useCallback
+  useCallback,
 } from "react";
 
 const RadioCtx = createContext(null);
-
-export function useRadio() {
-  return useContext(RadioCtx);
-}
+export const useRadio = () => useContext(RadioCtx);
 
 export function RadioProvider({ children }) {
-  // 1️⃣ Shared Audio instance
+  /* 1️⃣ Shared <audio> element */
   const audioRef = useRef(new Audio());
 
-  // 2️⃣ State
-  const [playlist, setPlaylist] = useState([]);
-  const [current, setCurrent]   = useState(0);
-  const [playing, setPlaying]   = useState(false);
-  const [shuffle, setShuffle]   = useState(false);
-  const [pct, setPct]           = useState(0);
+  /* 2️⃣ State */
+  const [playlist, setPlaylist]   = useState([]);
+  const [current,  setCurrent]    = useState(0);
+  const [playing,  setPlaying]    = useState(false);
+  const [shuffle,  setShuffle]    = useState(false);
+  const [pct,      setPct]        = useState(0);
 
-  // 3️⃣ Load playlist once
+  /* 3️⃣ Load playlist once */
   useEffect(() => {
     fetch("/radio/playlist.json")
       .then((r) => r.json())
@@ -33,15 +30,15 @@ export function RadioProvider({ children }) {
       .catch(console.error);
   }, []);
 
-  // 4️⃣ Attach timeupdate & ended listeners once
+  /* 4️⃣ Time-update & ended listeners  */
   useEffect(() => {
     const audio = audioRef.current;
 
-    const onTime = () => {
+    const onTime  = () =>
       setPct((audio.currentTime / audio.duration) * 100 || 0);
-    };
+
     const onEnded = () => {
-      if (playlist.length) next();  // auto-advance if we have tracks
+      if (playlist.length) next();          // auto-advance
     };
 
     audio.addEventListener("timeupdate", onTime);
@@ -52,33 +49,33 @@ export function RadioProvider({ children }) {
       audio.removeEventListener("timeupdate", onTime);
       audio.removeEventListener("ended", onEnded);
     };
-  }, [playlist.length]);
+  }, [playlist.length, next]);               // ➡️ include `next`
 
-  // 5️⃣ Swap source when the current index or playlist changes
+  /* 5️⃣ Swap source when track / play-state changes */
   useEffect(() => {
     if (!playlist.length) return;
+
     const audio = audioRef.current;
     audio.src = playlist[current].src;
     audio.load();
+
     if (playing) {
       audio.play().catch(console.error);
     }
-  }, [current, playlist]);
+  }, [current, playlist, playing]);          // ➡️ include `playing`
 
-  // 6️⃣ Playback controls
-  const play  = () => { audioRef.current.play().catch(console.error); setPlaying(true); };
-  const pause = () => { audioRef.current.pause();                    setPlaying(false); };
-  const toggle= () => { playing ? pause() : play(); };
+  /* 6️⃣ Playback controls */
+  const play   = () => { audioRef.current.play().catch(console.error); setPlaying(true); };
+  const pause  = () => { audioRef.current.pause();                    setPlaying(false); };
+  const toggle = () => { playing ? pause() : play(); };
 
-  // 7️⃣ Advance logic (shuffle vs linear)
+  /* 7️⃣ Advance logic (shuffle vs. linear) */
   const next = useCallback(() => {
     setCurrent((i) => {
       const len = playlist.length;
       if (shuffle && len > 1) {
         let rand;
-        do {
-          rand = Math.floor(Math.random() * len);
-        } while (rand === i);
+        do { rand = Math.floor(Math.random() * len); } while (rand === i);
         return rand;
       }
       return (i + 1) % len;
@@ -91,15 +88,13 @@ export function RadioProvider({ children }) {
     setPlaying(true);
   };
 
-  // 8️⃣ Shuffle toggle
-  const toggleShuffle = () => {
-    setShuffle((s) => !s);
-  };
+  /* 8️⃣ Shuffle toggle */
+  const toggleShuffle = () => setShuffle((s) => !s);
 
-  // 9️⃣ Expose all controls & state
+  /* 9️⃣ Expose state & controls */
   const value = {
     playlist,
-    track    : playlist[current],
+    track: playlist[current],
     current,
     pct,
     playing,
