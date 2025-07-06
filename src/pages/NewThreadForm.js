@@ -13,29 +13,29 @@ import {
 import { db, auth } from '../firebase';
 import './NewThreadForm.css';
 
-function NewThreadForm() {
+export default function NewThreadForm() {
   const { categoryId } = useParams();
-  const nav            = useNavigate();
-  const { state }      = useLocation();   // carries catName from list page
+  const nav           = useNavigate();
+  const { state }     = useLocation();          // catName passed from list page
 
-  /* ───────── local state ───────── */
-  const initialName       = state?.catName || '';
+  /* ── local state ── */
+  const initialName        = state?.catName || '';
   const [catName, setCatName] = useState(initialName);
   const [title,   setTitle]   = useState('');
   const [body,    setBody]    = useState('');
   const [saving,  setSaving]  = useState(false);
   const [error,   setError]   = useState('');
 
-  /* ───────── fetch category title if not passed via router ───────── */
+  /* ── fetch category title if it wasn’t routed in ── */
   useEffect(() => {
-    if (initialName) return;         // already have it
+    if (initialName) return;
     (async () => {
       const snap = await getDoc(doc(db, 'forumCategories', categoryId));
       if (snap.exists()) setCatName(snap.data().title);
     })();
   }, [categoryId, initialName]);
 
-  /* ───────── form validation ───────── */
+  /* ── simple form validation ── */
   function validate() {
     if (!title.trim() || !body.trim()) {
       setError('Title and body are required.');
@@ -48,7 +48,7 @@ function NewThreadForm() {
     return true;
   }
 
-  /* ───────── submit handler ───────── */
+  /* ── submit handler ── */
   async function handleSubmit(e) {
     e.preventDefault();
     if (!validate()) return;
@@ -62,29 +62,29 @@ function NewThreadForm() {
     try {
       setSaving(true);
 
-      /* ① save the thread */
+      /* ① create the thread */
       const ref = await addDoc(collection(db, 'forumThreads'), {
         categoryId,
-        title: title.trim(),
-        body:  body.trim(),
-        createdBy: user.displayName || user.email.split('@')[0],
-        uid:       user.uid,
-        createdAt: serverTimestamp(),
+        title:        title.trim(),
+        body:         body.trim(),
+        createdBy:    user.displayName || user.email.split('@')[0],
+        uid:          user.uid,
+        createdAt:    serverTimestamp(),
         commentCount: 0,
-        thumbnail: '',
+        score:        0,            // ← NEW: makes query with orderBy('score') work
+        thumbnail:    '',
       });
 
-      /* ② bump thread counter (best-effort) */
+      /* ② best-effort: increment thread counter on the category */
       try {
         await updateDoc(doc(db, 'forumCategories', categoryId), {
           threadCount: increment(1),
         });
       } catch (err) {
-        // Permission error?  Just log – don’t block the UX.
         console.warn('[threadCount] update skipped:', err.code || err.message);
       }
 
-      /* ③ go to the new thread */
+      /* ③ navigate to the new thread */
       nav(`/forums/thread/${ref.id}`);
     } catch (err) {
       console.error(err);
@@ -94,7 +94,7 @@ function NewThreadForm() {
     }
   }
 
-  /* ───────── ui ───────── */
+  /* ── ui ── */
   return (
     <section className="new-thread-page">
       <h1>
@@ -108,7 +108,7 @@ function NewThreadForm() {
           Title
           <input
             type="text"
-            maxLength="120"
+            maxLength={120}
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="Enter title"
@@ -119,7 +119,7 @@ function NewThreadForm() {
         <label>
           Body
           <textarea
-            rows="8"
+            rows={8}
             value={body}
             onChange={e => setBody(e.target.value)}
             placeholder="Enter body"
@@ -149,5 +149,3 @@ function NewThreadForm() {
     </section>
   );
 }
-
-export default NewThreadForm;
