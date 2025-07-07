@@ -17,23 +17,32 @@ function ForumPromo() {
         Share ideas, ask questions, and connect with Nigerians worldwide.
       </p>
 
-      {/* Replace cards with banner */}
-      <div className="forum-banner-wrapper">
-        <img
-          src="/images/new-forum-banner.png"
-          alt="Connect With the Forum"
-          className="forum-banner-img"
-          onClick={() => nav('/forums')}
-          role="button"
-          style={{ cursor: 'pointer' }}
-        />
+      {/* Banner that links to /forums */}
+      <div
+        className="forum-banner-wrapper"
+        role="button"
+        tabIndex={0}
+        onClick={() => nav('/forums')}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && nav('/forums')}
+        style={{ cursor: 'pointer' }}
+        aria-label="Go to forum categories"
+      >
+<picture>
+  <source srcSet="/images/new-forum-banner.webp" type="image/webp" />
+  <img
+    src="/images/new-forum-banner.webp"
+    alt="Connect With the Forum banner"
+    className="forum-banner-img"
+    loading="lazy"
+    width={768}
+    height={512}   // adjust to your exported dimensions
+  />
+</picture>
       </div>
 
-      {/* Optional call-to-action */}
       <button
         type="button"
         className="forum-promo__cta"
-        aria-label="Explore all forum categories"
         onClick={() => nav('/forums')}
       >
         Explore Forum
