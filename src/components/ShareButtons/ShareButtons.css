@@ -1,0 +1,59 @@
+/* ----------------------------------------
+   ShareButtons.css – Clean Final Version
+   Styled pill with green background + dark mode
+----------------------------------------- */
+
+/* ⏺️ Container – holds both buttons */
+.share-buttons {
+  display: inline-flex;        /* row of buttons inside pill */
+  align-items: center;
+  gap: 10px;                   /* space between WhatsApp & Facebook */
+
+  background: #116e49;         /* your green */
+  padding: 6px 12px;
+  border-radius: 14px;         /* curved outer edge */
+  margin-top: 12px;
+}
+
+/* ⏺️ Base style for each button */
+.share-btn {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 8px;
+
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);  /* soft badge bg */
+  text-decoration: none;
+
+  transition: background 0.2s ease;
+}
+
+.share-btn:hover,
+.share-btn:focus {
+  background: rgba(255, 255, 255, 0.3);   /* highlight on hover */
+}
+
+/* ⏺️ Brand-specific colours (if needed elsewhere) */
+.wa-btn {
+  /* Optional WhatsApp-specific styling */
+}
+.fb-btn {
+  /* Optional Facebook-specific styling */
+}
+
+/* ⏺️ Dark mode support */
+
+/* If your app uses a .dark class on <body> or <html> */
+body.dark .share-buttons,
+html.dark .share-buttons {
+  background: #0e5235;  /* darker green for dark mode */
+}
+
+/* Also support user’s system theme */
+@media (prefers-color-scheme: dark) {
+  .share-buttons {
+    background: #0e5235;
+  }
+}

@@ -8,6 +8,7 @@ import {
 import { db, auth }   from '../firebase';
 import { isAdmin }    from '../utils/isAdmin';
 import { vote }       from '../utils/vote';
+import ShareButtons   from '../components/ShareButtons/ShareButtons';   // ← NEW
 import './ForumPost.css';
 
 function ForumPost() {
@@ -27,33 +28,21 @@ function ForumPost() {
   const currentUser = auth.currentUser;
 
   /* ── fetch thread once ── */
-useEffect(() => {
-  (async () => {
-    try {
-      console.log('🔍 Fetching thread ID:', threadId);
-      const snap = await getDoc(doc(db, 'forumThreads', threadId));
-      if (!snap.exists()) {
-        console.log('❌ No thread found');
-        setLoading(false);
-        return;
-      }
-
-      const threadData = { id: snap.id, ...snap.data() };
-      console.log('📌 Thread data:', threadData);
-      setThread(threadData);
-    } catch (err) {
-      console.error('🔥 Error fetching thread:', err.message);
-    } finally {
-      setLoading(false);
-    }
-  })();
-}, [threadId]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const snap = await getDoc(doc(db, 'forumThreads', threadId));
+        if (!snap.exists()) { setLoading(false); return; }
+        setThread({ id: snap.id, ...snap.data() });
+      } catch (err) { console.error(err); } finally { setLoading(false); }
+    })();
+  }, [threadId]);
 
   /* ── permissions ── */
   useEffect(() => {
     (async () => {
       if (!thread || !auth.currentUser) return;
-      const admin  = await isAdmin();
+      const admin = await isAdmin();
       setAdminStatus(admin);
       setCanModifyThread(admin || auth.currentUser.uid === thread.uid);
     })();
@@ -102,122 +91,195 @@ useEffect(() => {
         uid: user.uid,
         createdAt: serverTimestamp(),
       });
-      await updateDoc(doc(db, 'forumThreads', threadId), {
-        commentCount: increment(1)
-      });
+      await updateDoc(doc(db, 'forumThreads', threadId), { commentCount: increment(1) });
       setNewComment('');
-    } catch (err) {
-      setError(err.message);
-    } finally { setPosting(false); }
+    } catch (err) { setError(err.message); } finally { setPosting(false); }
   };
 
   /* ── vote helpers ── */
   const myThreadVote = thread?.voters?.[currentUser?.uid] ?? 0;
-  const handleThreadVote  = (dir) =>
-    vote({ type:'thread',  id: thread.id },  currentUser.uid, dir);
-  const handleCommentVote = (id, dir) =>
-    vote({ type:'comment', id }, currentUser.uid, dir);
+  const handleThreadVote  = (dir) => vote({ type:'thread',  id: thread.id },  currentUser.uid, dir);
+  const handleCommentVote = (id, dir) => vote({ type:'comment', id }, currentUser.uid, dir);
 
-  if (loading) return <p style={{ padding:'2rem' }}>Loading…</p>;
-  if (!thread)  return <p style={{ padding:'2rem' }}>Thread not found.</p>;
+  /* ── share helpers ── */
+  const absoluteURL = typeof window !== 'undefined' ? window.location.href : '';
 
-  return (
-    <section className="post-page">
-      <article className="post-card">
-        <h1 className="post-title">{thread.title}</h1>
+  /* ── early returns ── */
+  if (loading) return React.createElement('p', { style:{ padding:'2rem' } }, 'Loading…');
+  if (!thread)  return React.createElement('p', { style:{ padding:'2rem' } }, 'Thread not found.');
 
-        {/* vote box */}
-        <div className="vote-box">
-          <button
-            className={myThreadVote === 1 ? 'voted-up' : ''}
-            onClick={() => handleThreadVote(1)}
-          >▲</button>
-          <span>{thread.score ?? 0}</span>
-          <button
-            className={myThreadVote === -1 ? 'voted-down' : ''}
-            onClick={() => handleThreadVote(-1)}
-          >▼</button>
-        </div>
+  /* ── MAIN RENDER ── */
+  return React.createElement(
+    'section',
+    { className: 'post-page' },
+    [
+      /* ░░ THREAD CARD ░░ */
+      React.createElement(
+        'article',
+        { key: 'article', className: 'post-card' },
+        [
+          React.createElement('h1', { key: 'title', className: 'post-title' }, thread.title),
 
-        <div className="post-meta">
-          <small>
-            Posted by <strong>@{thread.createdBy}</strong>{' '}
-            • {thread.createdAt?.toDate()?.toLocaleString('en-GB')}
-          </small>
-        </div>
+          /* vote box */
+          React.createElement(
+            'div',
+            { key: 'vbox', className: 'vote-box' },
+            [
+              React.createElement('button', {
+                key: 'up',
+                className: myThreadVote === 1 ? 'voted-up' : '',
+                onClick: () => handleThreadVote(1)
+              }, '▲'),
+              React.createElement('span', { key: 'score' }, thread.score ?? 0),
+              React.createElement('button', {
+                key: 'down',
+                className: myThreadVote === -1 ? 'voted-down' : '',
+                onClick: () => handleThreadVote(-1)
+              }, '▼')
+            ]
+          ),
 
-        {canModifyThread && (
-          <div className="post-actions">
-            <button className="danger" onClick={handleDeleteThread}>Delete</button>
-          </div>
-        )}
+          /* meta */
+          React.createElement(
+            'div',
+            { key: 'meta', className: 'post-meta' },
+            React.createElement(
+              'small',
+              null,
+              [
+                'Posted by ',
+                React.createElement('strong', { key: 'u' }, '@' + thread.createdBy),
+                ' • ',
+                thread.createdAt?.toDate()?.toLocaleString('en-GB')
+              ]
+            )
+          ),
 
-        <p className="post-body">{thread.body}</p>
-      </article>
+          /* delete */
+          canModifyThread
+            ? React.createElement(
+                'div',
+                { key: 'actions', className: 'post-actions' },
+                React.createElement('button', { className: 'danger', onClick: handleDeleteThread }, 'Delete')
+              )
+            : null,
 
-      <h2 className="comments-heading">{comments.length} comments</h2>
+          React.createElement('p', { key: 'body', className: 'post-body' }, thread.body),
 
-      <ul className="comment-list">
-        {comments.map(c => {
-          const myVote = c.voters?.[currentUser?.uid] ?? 0;
-          return (
-            <li key={c.id} className="comment-item">
-              <div className="comment-avatar">{c.createdBy[0].toUpperCase()}</div>
+          /* SHARE BUTTONS for thread */
+          React.createElement(ShareButtons, { key: 'share', url: absoluteURL, text: thread.title })
+        ]
+      ),
 
-              <div className="comment-bubble">
-                <header>
-                  <span className="comment-user">@{c.createdBy}</span>{' '}
-                  <time>
-                    {c.createdAt?.toDate
-                      ? c.createdAt.toDate().toLocaleString('en-GB',{
-                          hour:'2-digit', minute:'2-digit', day:'numeric', month:'short'
-                        })
-                      : 'Just now'}
-                  </time>
-                </header>
+      /* ░░ COMMENTS ░░ */
+      React.createElement('h2', { key: 'h2', className: 'comments-heading' }, comments.length + ' comments'),
 
-                <p>{c.text}</p>
+      React.createElement(
+        'ul',
+        { key: 'clist', className: 'comment-list' },
+        [
+          ...comments.map(c => {
+            const myVote = c.voters?.[currentUser?.uid] ?? 0;
+            const commentURL = absoluteURL.replace(/#.*$/, '') + '#comment-' + c.id;
 
-                <div className="comment-votes">
-                  <button
-                    className={myVote === 1 ? 'voted-up' : ''}
-                    onClick={() => handleCommentVote(c.id, 1)}
-                  >▲</button>
-                  <span>{c.score ?? 0}</span>
-                  <button
-                    className={myVote === -1 ? 'voted-down' : ''}
-                    onClick={() => handleCommentVote(c.id, -1)}
-                  >▼</button>
-                </div>
+            return React.createElement(
+              'li',
+              { key: c.id, className: 'comment-item', id: 'comment-' + c.id },
+              [
+                React.createElement('div', { key: 'av', className: 'comment-avatar' }, c.createdBy[0].toUpperCase()),
 
-                {(adminStatus || c.uid === currentUser?.uid) && (
-                  <button className="delete-btn" onClick={() => handleDeleteComment(c.id)}>
-                    Delete
-                  </button>
-                )}
-              </div>
-            </li>
-          );
-        })}
-        <li ref={bottomRef} />
-      </ul>
+                React.createElement(
+                  'div',
+                  { key: 'bubble', className: 'comment-bubble' },
+                  [
+                    /* header */
+                    React.createElement(
+                      'header',
+                      { key: 'head' },
+                      [
+                        React.createElement('span', { key: 'user', className: 'comment-user' }, '@' + c.createdBy),
+                        ' ',
+                        React.createElement(
+                          'time',
+                          { key: 'time' },
+                          c.createdAt?.toDate
+                            ? c.createdAt.toDate().toLocaleString('en-GB', {
+                                hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short'
+                              })
+                            : 'Just now'
+                        )
+                      ]
+                    ),
 
-      <form onSubmit={postComment} className="comment-form">
-        {error && <p className="form-error">{error}</p>}
-        <textarea
-          rows="4"
-          placeholder="Add a comment…"
-          value={newComment}
-          onChange={e => setNewComment(e.target.value)}
-          required
-        />
-        <button type="submit" disabled={posting}>
-          {posting ? 'Posting…' : 'Post Comment'}
-        </button>
-      </form>
+                    React.createElement('p', { key: 'txt' }, c.text),
 
-      <Link to="/forums" className="back-link">← Back to threads</Link>
-    </section>
+                    /* votes */
+                    React.createElement(
+                      'div',
+                      { key: 'cvotes', className: 'comment-votes' },
+                      [
+                        React.createElement('button', {
+                          key: 'up',
+                          className: myVote === 1 ? 'voted-up' : '',
+                          onClick: () => handleCommentVote(c.id, 1)
+                        }, '▲'),
+                        React.createElement('span', { key: 'score' }, c.score ?? 0),
+                        React.createElement('button', {
+                          key: 'down',
+                          className: myVote === -1 ? 'voted-down' : '',
+                          onClick: () => handleCommentVote(c.id, -1)
+                        }, '▼')
+                      ]
+                    ),
+
+                    /* delete btn (if owner or admin) */
+                    (adminStatus || c.uid === currentUser?.uid)
+                      ? React.createElement(
+                          'button',
+                          { key: 'del', className: 'delete-btn', onClick: () => handleDeleteComment(c.id) },
+                          'Delete'
+                        )
+                      : null,
+
+                    /* SHARE BUTTONS for comment */
+                    React.createElement(ShareButtons, {
+                      key: 'share',
+                      url: commentURL,
+                      text: c.text.slice(0, 40) + (c.text.length > 40 ? '…' : '')
+                    })
+                  ]
+                )
+              ]
+            );
+          }),
+
+          React.createElement('li', { key: 'bottom', ref: bottomRef })
+        ]
+      ),
+
+      /* ░░ COMMENT FORM ░░ */
+      React.createElement(
+        'form',
+        { key: 'form', className: 'comment-form', onSubmit: postComment },
+        [
+          error ? React.createElement('p', { key: 'err', className: 'form-error' }, error) : null,
+          React.createElement('textarea', {
+            key: 'ta',
+            rows: 4,
+            placeholder: 'Add a comment…',
+            value: newComment,
+            onChange: e => setNewComment(e.target.value),
+            required: true
+          }),
+          React.createElement('button', { key: 'btn', type: 'submit', disabled: posting },
+            posting ? 'Posting…' : 'Post Comment'
+          )
+        ]
+      ),
+
+      /* back link */
+      React.createElement(Link, { key: 'back', to: '/forums', className: 'back-link' }, '← Back to threads')
+    ]
   );
 }
 

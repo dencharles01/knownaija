@@ -1,134 +1,107 @@
 [
-  
   {
     "title": "Know Yourself",
     "artist": "KnowNaija",
-    "src": "/radio/Know Yourself, KnowNaija.mp3",
-    "cover": "/radio/know-yourself.jpg"
+    "src": "/radio/know-yourself.mp3",
+    "cover": "/radio/know-yourself.jpg",
+    "preload": "none"
   },
-
   {
     "title": "Naija No Dey Carry Last",
     "artist": "KnowNaija",
-    "src": "/radio/Naija No Dey Carry Last.mp3",
-    "cover": "/radio/Naija No Dey Carry Last.jpg"
+    "src": "/radio/naija-no-dey-carry-last.mp3",
+    "cover": "/radio/naija-no-dey-carry-last.jpg",
+    "preload": "none"
   },
-
-{
+  {
     "title": "Roots and Road",
     "artist": "KnowNaija",
-    "src": "/radio/roots-road.mp3",
-    "cover": "/radio/roots-road.jpg"
+    "src": "/radio/roots-and-road.mp3",
+    "cover": "/radio/roots-and-road.jpg",
+    "preload": "none"
   },
-
- 
-
-  
-
-
- {
+  {
     "title": "Far From Over",
     "artist": "KnowNaija",
-    "src": "/radio/Far From Over.mp3",
-    "cover": "/radio/far from over.jpg"
+    "src": "/radio/far-from-over.mp3",
+    "cover": "/radio/far-from-over.jpg",
+    "preload": "none"
   },
-
-
-
-{
+  {
     "title": "Keep Going",
     "artist": "KnowNaija",
-    "src": "/radio/Keep Going.mp3",
-    "cover": "/radio/keep Going.jpg"
+    "src": "/radio/keep-going.mp3",
+    "cover": "/radio/keep-going.jpg",
+    "preload": "none"
   },
-
-
-{
+  {
     "title": "Mirror Talk",
     "artist": "KnowNaija",
-    "src": "/radio/Mirror Talk.mp3",
-    "cover": "/radio/Mirror Talk.jpg"
+    "src": "/radio/mirror-talk.mp3",
+    "cover": "/radio/mirror-talk.jpg",
+    "preload": "none"
   },
-
-
-   {
+  {
     "title": "Rise Naija Rise",
     "artist": "KnowNaija",
-    "src": "/radio/Rise Naija Rise.mp3",
-    "cover": "/radio/rise-naija-rise.jpg"
+    "src": "/radio/rise-naija-rise.mp3",
+    "cover": "/radio/rise-naija-rise.jpg",
+    "preload": "none"
   },
-
-
   {
     "title": "Boldman Rhemzy",
     "artist": "KnowNaija",
     "src": "/radio/boldman-rhemzy.mp3",
-    "cover": "/radio/boldman-rhemzy.jpg"
+    "cover": "/radio/boldman-rhemzy.jpg",
+    "preload": "none"
   },
   {
     "title": "Ayo's Groove",
     "artist": "KnowNaija",
-    "src": "/radio/ayo-groove.mp3",
-    "cover": "/radio/ayo-groove.jpg"
+    "src": "/radio/ayos-groove.mp3",
+    "cover": "/radio/ayos-groove.jpg",
+    "preload": "none"
   },
   {
     "title": "Vibes of Naija",
     "artist": "KnowNaija",
-    "src": "/radio/vibesofnaija.mp3",
-    "cover": "/radio/vibesofnaija.jpg"
+    "src": "/radio/vibes-of-naija.mp3",
+    "cover": "/radio/vibes-of-naija.jpg",
+    "preload": "none"
   },
- 
-
-{
+  {
     "title": "Know Yourself (Remix)",
     "artist": "KnowNaija",
-    "src": "/radio/Know Yourself, remix.mp3",
-    "cover": "/radio/know-yourself-remix.jpg"
+    "src": "/radio/know-yourself-remix.mp3",
+    "cover": "/radio/know-yourself-remix.jpg",
+    "preload": "none"
   },
-
-
-    {
-    "title": "Rise Naija Rise (remix)",
+  {
+    "title": "Rise Naija Rise (Remix)",
     "artist": "KnowNaija",
-    "src": "/radio/Rise Naija Rise-remix.mp3",
-    "cover": "/radio/rise-naija-rise-remix.jpg"
+    "src": "/radio/rise-naija-rise-remix.mp3",
+    "cover": "/radio/rise-naija-rise-remix.jpg",
+    "preload": "none"
   },
-
-
-
-{
+  {
     "title": "Keep Going (Remix)",
     "artist": "KnowNaija",
-    "src": "/radio/Keep Going-remix.mp3",
-    "cover": "/radio/keep Going-remix.jpg"
+    "src": "/radio/keep-going-remix.mp3",
+    "cover": "/radio/keep-going-remix.jpg",
+    "preload": "none"
   },
-
-
-{
+  {
     "title": "Far From Over (Remix)",
     "artist": "KnowNaija",
-    "src": "/radio/Far From Over-remix.mp3",
-    "cover": "/radio/far from over-remix.jpg"
+    "src": "/radio/far-from-over-remix.mp3",
+    "cover": "/radio/far-from-over-remix.jpg",
+    "preload": "none"
   },
-
-
-
-
-{
+  {
     "title": "No Stopping Me",
     "artist": "KnowNaija",
-    "src": "/radio/No Stopping Me.mp3",
-    "cover": "/radio/No Stopping Me.jpg"
+    "src": "/radio/no-stopping-me.mp3",
+    "cover": "/radio/no-stopping-me.jpg",
+    "preload": "none"
   }
-
-
-
-
-
-
-
-
-
-
-
 ]
