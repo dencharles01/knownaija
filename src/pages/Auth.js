@@ -1,65 +1,20 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { auth, googleProvider } from '../firebase';
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  signInWithPopup
-} from 'firebase/auth';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { auth, googleProvider, signInWithPopup } from "../firebase";
 
 export default function Auth() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoginMode, setIsLoginMode] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      if (isLoginMode) {
-        const { user } = await signInWithEmailAndPassword(auth, email, password);
-
-        if (!user.emailVerified) {
-          setError("Please verify your email before logging in.");
-          return;
-        }
-
-        navigate('/');
-      } else {
-        if (email.endsWith('@example.com') || email.endsWith('@test.com')) {
-          setError("Please use a valid personal email address.");
-          return;
-        }
-
-        const { user } = await createUserWithEmailAndPassword(auth, email, password);
-        await sendEmailVerification(user);
-        alert("Account created. A verification email has been sent. Please verify your email before logging in.");
-        setIsLoginMode(true); // switch to login after signup
-        setEmail('');
-        setPassword('');
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleGoogleLogin = async () => {
-    setError('');
+    setError("");
     setLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
-      navigate('/');
+      const result = await signInWithPopup(auth, googleProvider);
+      navigate("/profile");
     } catch (err) {
-      console.error("Google login error:", err);
-      setError("Google login failed. Please try again or use email login.");
+      setError("Google sign-in failed: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -67,93 +22,54 @@ export default function Auth() {
 
   return (
     <div style={containerStyle}>
-      <h2 style={{ textAlign: 'center' }}>{isLoginMode ? 'Login' : 'Register'}</h2>
-
-      {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
-
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-          style={inputStyle}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-          style={inputStyle}
-        />
-
-        {/* Forgot password link (only in login mode) */}
-        {isLoginMode && (
-          <p style={{ textAlign: 'right', fontSize: '0.9rem' }}>
-            <a href="/forgot-password" style={{ color: '#007bff' }}>
-              Forgot Password?
-            </a>
-          </p>
-        )}
-
-        <button type="submit" style={buttonStyle} disabled={loading}>
-          {loading ? 'Please wait...' : isLoginMode ? 'Login' : 'Create Account'}
-        </button>
-      </form>
-
-      <button onClick={handleGoogleLogin} style={googleButtonStyle} disabled={loading}>
-        Sign in with Google
+      <h2 style={titleStyle}>Login to KnowNaija</h2>
+      {error && <p style={errorStyle}>{error}</p>}
+      <button
+        onClick={handleGoogleLogin}
+        style={buttonStyle}
+        disabled={loading}
+      >
+        {loading ? "Please wait…" : "Sign in with Google"}
       </button>
-
-      <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-        {isLoginMode ? "Don't have an account?" : "Already have an account?"}{' '}
-        <span
-          onClick={() => setIsLoginMode(!isLoginMode)}
-          style={{ color: '#007bff', cursor: 'pointer' }}
-        >
-          {isLoginMode ? 'Register here' : 'Login here'}
-        </span>
-      </p>
     </div>
   );
 }
 
+/* ───── Styles ───── */
 const containerStyle = {
-  maxWidth: '400px',
-  margin: '2rem auto',
-  padding: '2rem',
-  border: '1px solid #ccc',
-  borderRadius: '10px',
+  maxWidth: 360,
+  margin: "6rem auto",
+  padding: "2rem",
+  backgroundColor: "#008751",  // green background
+  borderRadius: "12px",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+  textAlign: "center",
+  color: "#fff",               // white text inside
 };
 
-const inputStyle = {
-  width: '100%',
-  padding: '0.75rem',
-  margin: '0.5rem 0',
-  borderRadius: '6px',
-  border: '1px solid #ccc',
+const titleStyle = {
+  marginBottom: "1.5rem",
+  fontSize: "1.5rem",
+  fontWeight: "600",
+};
+
+const errorStyle = {
+  color: "#ffdddd",
+  backgroundColor: "#a33",
+  padding: "0.5rem",
+  borderRadius: "6px",
+  marginBottom: "1rem",
 };
 
 const buttonStyle = {
-  width: '100%',
-  padding: '0.75rem',
-  backgroundColor: '#008751',
-  color: 'white',
-  border: 'none',
-  borderRadius: '6px',
-  cursor: 'pointer',
-  marginTop: '1rem',
-};
-
-const googleButtonStyle = {
-  width: '100%',
-  padding: '0.75rem',
-  backgroundColor: '#fff',
-  color: '#333',
-  border: '1px solid #ccc',
-  borderRadius: '6px',
-  cursor: 'pointer',
-  marginTop: '1rem',
+  width: "100%",
+  padding: "0.75rem",
+  backgroundColor: "#fff",      // white button
+  color: "#008751",             // green text
+  border: "none",
+  borderRadius: "8px",
+  fontSize: "1rem",
+  fontWeight: "500",
+  cursor: "pointer",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
 };

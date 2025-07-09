@@ -1,63 +1,63 @@
-// src/App.js
-// Root routing config (React Router v6) for KnowNaija
-
 import React, { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase";
 
-/* ── primary pages ─ */
-import Home            from "./pages/Home";
-import Quiz            from "./pages/Quiz";
-import Result          from "./pages/Result";
-import Profile         from "./pages/Profile";
-import Leaderboard     from "./pages/Leaderboard";
-import About           from "./pages/About";
-import Auth            from "./pages/Auth";
-import Register        from "./pages/Register";
-import VerifyNotice    from "./pages/VerifyNotice";
-import ForgotPassword  from "./pages/ForgotPassword";
-import Disclaimer from './pages/Disclaimer';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
+/* Firebase session check */
+import { auth, onAuthStateChanged } from "./firebase";
 
+/* Primary pages */
+import Home           from "./pages/Home";
+import Quiz           from "./pages/Quiz";
+import Result         from "./pages/Result";
+import Profile        from "./pages/Profile";
+import Leaderboard    from "./pages/Leaderboard";
+import About          from "./pages/About";
+import Auth           from "./pages/Auth";
+import Register       from "./pages/Register";
+import VerifyNotice   from "./pages/VerifyNotice";
+import ForgotPassword from "./pages/ForgotPassword";
+import Disclaimer     from "./pages/Disclaimer";
+import Privacy        from "./pages/Privacy";
+import Terms          from "./pages/Terms";
 
+/* Stories */
+import StoriesPage  from "./pages/StoriesPage";
+import StoryPage    from "./pages/StoryPage";
+import SubmitStory  from "./pages/SubmitStory";
+import AdminStories from "./pages/AdminStories";
 
+/* Radio */
+import RadioPage from "./pages/RadioPage";
 
-
-/* ── stories ─ */
-import StoriesPage   from "./pages/StoriesPage";
-import StoryPage     from "./pages/StoryPage";
-import SubmitStory   from "./pages/SubmitStory";
-import AdminStories  from "./pages/AdminStories";
-
-/* ── radio ─ */
-import RadioPage     from "./pages/RadioPage";
-
-/* ── forum ─ */
+/* Forum */
 import ForumCategories from "./pages/ForumCategories";
 import ForumThreads    from "./pages/ForumThreads";
 import ForumPost       from "./pages/ForumPost";
 import NewThreadForm   from "./pages/NewThreadForm";
 
-/* ── layout ─ */
+/* Shared layout */
 import Navbar     from "./components/Navbar";
 import Footer     from "./components/Footer";
 import RadioBadge from "./components/RadioBadge";
 
-/* ── access control ─ */
+/* Utils */
 import ProtectedRoute from "./utils/ProtectedRoute";
 
-function App() {
+// Optional loading component
+const Loading = () => (
+  <div style={{ padding: "2rem", textAlign: "center" }}>
+    <h2>Loading...</h2>
+  </div>
+);
+
+export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
 
-  /* wait for Firebase before rendering routes */
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, () => setAuthChecked(true));
-    return () => unsub();
+    return unsub;
   }, []);
 
-  if (!authChecked) return null;
+  if (!authChecked) return <Loading />;
 
   return (
     <>
@@ -65,43 +65,35 @@ function App() {
       <RadioBadge />
 
       <Routes>
-        {/* public routes */}
+        {/* Public routes */}
         <Route path="/"                element={<Home />} />
         <Route path="/about"           element={<About />} />
         <Route path="/auth"            element={<Auth />} />
-        <Route path="/register"        element={<Register />} />
         <Route path="/radio"           element={<RadioPage />} />
         <Route path="/stories"         element={<StoriesPage />} />
         <Route path="/story/:id"       element={<StoryPage />} />
         <Route path="/verify"          element={<VerifyNotice />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/disclaimer" element={<Disclaimer />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<Terms />} />
+        <Route path="/disclaimer"      element={<Disclaimer />} />
+        <Route path="/privacy"         element={<Privacy />} />
+        <Route path="/terms"           element={<Terms />} />
+        <Route path="/quiz"            element={<Quiz />} /> {/* ✅ PUBLIC */}
+        
+        {/* Forum: Public view, protected post */}
+        <Route path="/forums"                     element={<ForumCategories />} />
+        <Route path="/forums/:categoryId"         element={<ForumThreads />} />
+        <Route path="/forums/thread/:threadId"    element={<ForumPost />} />
+        <Route path="/forums/:categoryId/new"     element={<ProtectedRoute><NewThreadForm /></ProtectedRoute>} />
 
-
-
-
-        {/* protected core */}
-        <Route path="/quiz"        element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
-        <Route path="/result"      element={<ProtectedRoute><Result /></ProtectedRoute>} />
-        <Route path="/profile"     element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
-
-        {/* protected stories */}
-        <Route path="/submit-story"  element={<ProtectedRoute><SubmitStory /></ProtectedRoute>} />
-        <Route path="/admin-stories" element={<ProtectedRoute><AdminStories /></ProtectedRoute>} />
-
-        {/* protected forum */}
-        <Route path="/forums"                      element={<ProtectedRoute><ForumCategories /></ProtectedRoute>} />
-        <Route path="/forums/:categoryId"          element={<ProtectedRoute><ForumThreads /></ProtectedRoute>} />
-        <Route path="/forums/:categoryId/new"      element={<ProtectedRoute><NewThreadForm /></ProtectedRoute>} />
-        <Route path="/forums/thread/:threadId"     element={<ProtectedRoute><ForumPost /></ProtectedRoute>} />
+        {/* Protected-only routes */}
+        <Route path="/result"         element={<ProtectedRoute><Result /></ProtectedRoute>} />
+        <Route path="/profile"        element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/leaderboard"    element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+        <Route path="/submit-story"   element={<ProtectedRoute><SubmitStory /></ProtectedRoute>} />
+        <Route path="/admin-stories"  element={<ProtectedRoute><AdminStories /></ProtectedRoute>} />
       </Routes>
 
       <Footer />
     </>
   );
 }
-
-export default App;

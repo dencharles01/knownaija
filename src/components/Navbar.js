@@ -1,164 +1,158 @@
+// ───────────────────────────────────────────────
 // src/components/Navbar.js
+//   Global navigation bar (desktop + mobile)
+// ───────────────────────────────────────────────
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { auth, db } from "../firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  auth,
+  db,
+  onAuthStateChanged,
+  signOut,
+  getDoc,
+  doc,
+} from "../firebase";
 
-import ThemeToggle   from "./ThemeToggle";
-import maleAvatar    from "../assets/avatars/male.png";
-import femaleAvatar  from "../assets/avatars/female.png";
+import ThemeToggle  from "./ThemeToggle";
+import maleAvatar   from "../assets/avatars/male.png";
+import femaleAvatar from "../assets/avatars/female.png";
 
 import "./Navbar.css";
 
 const ADMIN_EMAIL = "dencharles01@gmail.com";
 
 export default function Navbar() {
-  const nav = useNavigate();
-  const loc = useLocation();
-
+  const navigate = useNavigate();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
-  const [data, setData] = useState(null);
+  const [user,      setUser]    = useState(null);
+  const [profile,   setProfile] = useState(null);
 
-  // ── auth listener ─
+  /* ───────── listen to Firebase auth ───────── */
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (cu) => {
       setUser(cu);
       if (cu) {
         const snap = await getDoc(doc(db, "users", cu.uid));
-        if (snap.exists()) setData(snap.data());
+        if (snap.exists()) setProfile(snap.data());
       } else {
-        setData(null);
+        setProfile(null);
       }
     });
     return unsub;
   }, []);
 
-  const avatarSrc = data?.avatar === "female" ? femaleAvatar : maleAvatar;
-  const active = (path) => loc.pathname === path;
-  const logOut = async () => {
+  const isActive = (path) => location.pathname === path;
+  const avatar   = profile?.avatar === "female" ? femaleAvatar : maleAvatar;
+
+  const handleLogout = async () => {
     await signOut(auth);
-    nav("/");
+    navigate("/");
   };
 
-  // nav items (Leaderboard removed)
-  const menuItems = [
-    { p: "/",             t: "Home" },
-    { p: "/quiz",         t: "Quizzes" },
-    { p: "/profile",      t: "Profile" },
-    // { p: "/leaderboard",  t: "Leaderboard" }, // Disabled for now
-    { p: "/radio",        t: "Radio" },
-    { p: "/about",        t: "About" },
-    { p: "/submit-story", t: "Submit Story" },
+  /* ───────── build menu items ───────── */
+  const items = [
+    { to: "/",        label: "Home" },
+    { to: "/quiz",    label: "Quizzes" },
+    { to: "/profile", label: "Profile" },
+    { to: "/radio",   label: "Radio" },
+    { to: "/about",   label: "About" },
   ];
+
+  // only show these to the admin
+  if (user?.email === ADMIN_EMAIL) {
+    items.push({ to: "/submit-story",  label: "Submit Story" });
+    items.push({ to: "/admin-stories", label: "Admin" });
+  }
 
   return (
     <nav className="navbar">
-      <div className="logo" onClick={() => nav("/")}>
-        📍 <strong>KnowNaija</strong>
-      </div>
+      <div className="navbar-inner">
+        {/* Logo */}
+        <div className="logo" onClick={() => navigate("/")}>
+          📍 <strong>KnowNaija</strong>
+        </div>
 
-      <div className="toggle-desktop">
-        <ThemeToggle />
-      </div>
-
-      <div
-        className={`hamburger ${menuOpen ? "open" : ""}`}
-        onClick={() => setMenuOpen(!menuOpen)}
-      >
-        <span />
-        <span />
-        <span />
-      </div>
-
-      <ul className={`nav-links ${menuOpen ? "show" : ""}`}>
-        {menuItems.map(({ p, t }) => (
-          <li key={p}>
-            <Link
-              to={p}
-              className={active(p) ? "active" : ""}
-              onClick={() => setMenuOpen(false)}
-            >
-              {t}
-            </Link>
-          </li>
-        ))}
-
-        {/* Admin-only link */}
-        {user?.email === ADMIN_EMAIL && (
-          <li>
-            <Link
-              to="/admin-stories"
-              className={active("/admin-stories") ? "active" : ""}
-              onClick={() => setMenuOpen(false)}
-            >
-              Admin
-            </Link>
-          </li>
-        )}
-
-        {/* Theme toggle (mobile only) */}
-        <li className="toggle-mobile">
+        {/* Desktop theme toggle */}
+        <div className="toggle-desktop">
           <ThemeToggle />
-        </li>
+        </div>
 
-        {/* Auth (mobile) */}
-        <li className="mobile-auth mt-4">
-          {user ? (
-            <button
-              className="btn secondary w-full"
-              onClick={() => {
-                setMenuOpen(false);
-                logOut();
-              }}
-            >
-              Log&nbsp;Out
-            </button>
-          ) : (
-            <>
-              <button
-                className="btn primary w-full mb-2"
-                onClick={() => {
-                  setMenuOpen(false);
-                  nav("/register");
-                }}
-              >
-                Sign&nbsp;Up
-              </button>
+        {/* Mobile hamburger */}
+        <button
+          className={`hamburger ${menuOpen ? "open" : ""}`}
+          onClick={() => setMenuOpen(o => !o)}
+          aria-label="Toggle navigation"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
+        {/* Nav links */}
+        <ul className={`nav-links ${menuOpen ? "show" : ""}`}>
+          {items.map(({ to, label }) => (
+            <li key={to} onClick={() => setMenuOpen(false)}>
+              <Link to={to} className={isActive(to) ? "active" : ""}>
+                {label}
+              </Link>
+            </li>
+          ))}
+
+          {/* Mobile-only theme toggle */}
+          <li className="toggle-mobile">
+            <ThemeToggle />
+          </li>
+
+          {/* Mobile-only auth button */}
+          <li className="mobile-auth">
+            {user ? (
               <button
                 className="btn secondary w-full"
                 onClick={() => {
+                  handleLogout();
                   setMenuOpen(false);
-                  nav("/auth");
                 }}
               >
-                Log&nbsp;In
+                Log Out
+              </button>
+            ) : (
+              <button
+                className="btn secondary w-full"
+                onClick={() => {
+                  navigate("/auth");
+                  setMenuOpen(false);
+                }}
+              >
+                Log In
+              </button>
+            )}
+          </li>
+        </ul>
+
+        {/* Desktop auth / avatar */}
+        <div className="auth-desktop">
+          {user ? (
+            <>
+              <img
+                src={avatar}
+                alt="avatar"
+                className="avatar-icon border"
+              />
+              <span>{user.displayName || user.email}</span>
+              <button className="btn secondary" onClick={handleLogout}>
+                Log Out
               </button>
             </>
+          ) : (
+            <button
+              className="btn secondary"
+              onClick={() => navigate("/auth")}
+            >
+              Log In
+            </button>
           )}
-        </li>
-      </ul>
-
-      <div className="auth-desktop">
-        {user ? (
-          <>
-            <img src={avatarSrc} alt="avatar" className="avatar-icon border" />
-            <span>{user.displayName || user.email}</span>
-            <button className="btn secondary" onClick={logOut}>
-              Log&nbsp;Out
-            </button>
-          </>
-        ) : (
-          <>
-            <button className="btn primary" onClick={() => nav("/register")}>
-              Sign&nbsp;Up
-            </button>
-            <button className="btn secondary" onClick={() => nav("/auth")}>
-              Log&nbsp;In
-            </button>
-          </>
-        )}
+        </div>
       </div>
     </nav>
   );
