@@ -1,25 +1,22 @@
 // src/components/AdminLogin.js
+
 import { useState } from "react";
-import { supabase } from "../supabaseClient";
+import { auth, signInWithEmailAndPassword } from "../firebase";
 
 export default function AdminLogin({ onSuccess }) {
-  const [email, setEmail] = useState("");
+  const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
-  const [err, setErr] = useState("");
+  const [err, setErr]           = useState("");
 
   async function signIn(e) {
     e.preventDefault();
     setErr("");
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      onSuccess(); // Notify parent (AdminStories)
+    } catch (error) {
       setErr(error.message);
-    } else if (data.session) {
-      onSuccess();               // notify parent (AdminStories)
     }
   }
 

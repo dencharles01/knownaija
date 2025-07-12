@@ -1,4 +1,3 @@
-// src/pages/NewThreadForm.js
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -10,23 +9,28 @@ import {
   updateDoc,
   increment,
 } from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import {
+  getDownloadURL,
+  ref,
+  uploadBytesResumable
+} from 'firebase/storage';
+import { db, auth, storage } from '../firebase';
 import './NewThreadForm.css';
 
 export default function NewThreadForm() {
   const { categoryId } = useParams();
-  const nav           = useNavigate();
-  const { state }     = useLocation();          // catName passed from list page
+  const nav = useNavigate();
+  const { state } = useLocation();
 
-  /* ── local state ── */
-  const initialName        = state?.catName || '';
+  const initialName = state?.catName || '';
   const [catName, setCatName] = useState(initialName);
-  const [title,   setTitle]   = useState('');
-  const [body,    setBody]    = useState('');
-  const [saving,  setSaving]  = useState(false);
-  const [error,   setError]   = useState('');
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
-  /* ── fetch category title if it wasn’t routed in ── */
   useEffect(() => {
     if (initialName) return;
     (async () => {
@@ -35,7 +39,18 @@ export default function NewThreadForm() {
     })();
   }, [categoryId, initialName]);
 
-  /* ── simple form validation ── */
+  function validateImage(file) {
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (!validTypes.includes(file.type)) {
+      return 'Only JPG, PNG, GIF, or WEBP images are allowed.';
+    }
+    if (file.size > maxSize) {
+      return 'Image too large. Max 5MB allowed.';
+    }
+    return null;
+  }
+
   function validate() {
     if (!title.trim() || !body.trim()) {
       setError('Title and body are required.');
@@ -48,7 +63,24 @@ export default function NewThreadForm() {
     return true;
   }
 
-  /* ── submit handler ── */
+  async function handleImageUpload(file) {
+    return new Promise((resolve, reject) => {
+      const filename = `${Date.now()}_${file.name}`;
+      const storageRef = ref(storage, `threadImages/${filename}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        null,
+        err => reject(err),
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          resolve(downloadURL);
+        }
+      );
+    });
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (!validate()) return;
@@ -61,21 +93,26 @@ export default function NewThreadForm() {
 
     try {
       setSaving(true);
+      let uploadedURL = '';
 
-      /* ① create the thread */
+      if (imageFile) {
+        setUploading(true);
+        uploadedURL = await handleImageUpload(imageFile);
+        setUploading(false);
+      }
+
       const ref = await addDoc(collection(db, 'forumThreads'), {
         categoryId,
-        title:        title.trim(),
-        body:         body.trim(),
-        createdBy:    user.displayName || user.email.split('@')[0],
-        uid:          user.uid,
-        createdAt:    serverTimestamp(),
+        title: title.trim(),
+        body: body.trim(),
+        createdBy: user.displayName || user.email.split('@')[0],
+        uid: user.uid,
+        createdAt: serverTimestamp(),
         commentCount: 0,
-        score:        0,            // ← NEW: makes query with orderBy('score') work
-        thumbnail:    '',
+        score: 0,
+        thumbnail: uploadedURL || '',
       });
 
-      /* ② best-effort: increment thread counter on the category */
       try {
         await updateDoc(doc(db, 'forumCategories', categoryId), {
           threadCount: increment(1),
@@ -84,7 +121,6 @@ export default function NewThreadForm() {
         console.warn('[threadCount] update skipped:', err.code || err.message);
       }
 
-      /* ③ navigate to the new thread */
       nav(`/forums/thread/${ref.id}`);
     } catch (err) {
       console.error(err);
@@ -94,7 +130,20 @@ export default function NewThreadForm() {
     }
   }
 
-  /* ── ui ── */
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const validationError = validateImage(file);
+    if (validationError) {
+      setError(validationError);
+      e.target.value = null;
+      setImageFile(null);
+    } else {
+      setError('');
+      setImageFile(file);
+    }
+  }
+
   return (
     <section className="new-thread-page">
       <h1>
@@ -126,6 +175,17 @@ export default function NewThreadForm() {
             required
           />
         </label>
+
+        <label>
+          Optional Image
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+        </label>
+
+        {uploading && <p>Uploading image…</p>}
 
         <div className="form-actions">
           <button

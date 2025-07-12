@@ -2,7 +2,6 @@
    NAVBAR – tokenised for light / dark theme
    ==================================================================== */
 
-/* ---------- outer wrapper (full-width sticky) ---------- */
 .navbar {
   position: sticky;
   top: 0;
@@ -18,29 +17,26 @@
   box-shadow: 0 4px 14px color-mix(in srgb, #000 14%, transparent);
 }
 
-/* ---------- inner container (centred) ---------- */
 .navbar-inner {
-  max-width: 1200px;       /* adjust to your layout */
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   position: relative;
   padding: 1rem 2rem;
   box-sizing: border-box;
 }
 
-/* ---------- logo (left) ---------- */
 .logo {
   font-size: 1.25rem;
   color: var(--success);
   font-weight: 700;
   cursor: pointer;
-  margin-right: auto;
 }
 
-/* ---------- nav links (center) ---------- */
+/* ---------- nav links ---------- */
 .nav-links {
-  margin: 0 auto;
   display: flex;
   gap: 1.5rem;
   list-style: none;
@@ -54,21 +50,28 @@
   border-radius: 5px;
   transition: background 0.2s, color 0.2s;
 }
-
 .nav-links a:hover,
 .nav-links .active {
   background: var(--success);
   color: #fff;
 }
 
-/* ---------- generic buttons ---------- */
+/* ---------- buttons ---------- */
 .btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  height: 38px !important;
+  padding: 0 16px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  border: none !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+  margin: 0 !important;
 }
 
 .btn.primary {
@@ -78,7 +81,6 @@
 .btn.primary:hover,
 .btn.primary:focus {
   background-color: #00a862 !important;
-  color: #fff !important;
 }
 
 .btn.secondary {
@@ -89,44 +91,69 @@
   background-color: #00663a;
 }
 
-/* ---------- auth & theme toggle (right) ---------- */
+/* ---------- right-side items ---------- */
 .auth-desktop,
 .toggle-desktop {
-  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-left: auto;
 }
 
-/* ---------- hamburger (hidden desktop) ---------- */
+/* force consistent spacing */
+.auth-desktop .btn + .btn {
+  margin-left: 8px !important;
+}
+.auth-desktop .btn {
+  align-self: center !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* ---------- hamburger menu ---------- */
 .hamburger {
   display: none;
   flex-direction: column;
   gap: 5px;
+  background-color: #008751;
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  width: 38px;
+  height: 38px;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
+  z-index: 1001;
 }
+
 .hamburger span {
-  width: 25px;
-  height: 3px;
-  background: var(--text);
+  width: 20px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
   transition: transform 0.3s, opacity 0.3s;
 }
+
 .hamburger.open span:nth-child(1) {
-  transform: rotate(45deg) translateY(8px);
+  transform: rotate(45deg) translateY(6px);
 }
 .hamburger.open span:nth-child(2) {
   opacity: 0;
 }
 .hamburger.open span:nth-child(3) {
-  transform: rotate(-45deg) translateY(-8px);
+  transform: rotate(-45deg) translateY(-6px);
 }
 
-/* ---------- mobile auth theming ---------- */
+/* ---------- mobile auth ---------- */
 .mobile-auth {
   display: none;
 }
+.toggle-mobile {
+  display: none;
+}
 
-/* ---------- avatar sizing ---------- */
+/* ---------- avatar ---------- */
 .avatar-icon {
   width: 32px;
   height: 32px;
@@ -140,40 +167,18 @@
   border-radius: 9999px;
 }
 
-/* ---------- placeholder toggles ---------- */
-.toggle-mobile {
-  display: none;
-}
-
 /* ====================================================================
-   MOBILE BREAKPOINT (≤768px)
+   MOBILE (≤768px)
    ==================================================================== */
 @media (max-width: 768px) {
-  /* show & position hamburger */
   .hamburger {
     display: flex;
-    position: absolute;
-    top: 50%;
+    position: fixed;
+    top: 1rem;
     right: 1rem;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background-color: #008751;
-    border: none;
-    border-radius: 6px;
-    padding: 0;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1001;
-  }
-  .hamburger span {
-    width: 20px;
-    height: 2px;
-    background: #fff;
-    margin: 3px 0;
-    border-radius: 2px;
+    z-index: 1100;
   }
 
-  /* vertical menu */
   .nav-links {
     display: none;
     flex-direction: column;
@@ -187,26 +192,141 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     z-index: 1000;
   }
+
   .nav-links.show {
     display: flex;
   }
+
   .nav-links li + li {
     margin-top: 1rem;
   }
 
-  /* show mobile auth & theme toggle, hide desktop versions */
   .auth-desktop {
-    display: none;
+    display: none !important;
   }
+
   .mobile-auth {
     display: block;
     margin-top: 1rem;
   }
+
   .toggle-desktop {
     display: none;
   }
+
   .toggle-mobile {
     display: block;
     margin-top: 1rem;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ─────────────────────────────────────────────
+   DARK MODE + MOBILE MENU FIXES
+────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .nav-links {
+    background: var(--card);
+    color: var(--text);
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-links a {
+    color: var(--text);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: color 0.3s ease, background 0.3s ease;
+  }
+
+  .nav-links a:hover {
+    background: color-mix(in srgb, var(--success) 10%, transparent);
+    color: #28a745;
+  }
+
+  .nav-links .active {
+    color: #28a745;
+    font-weight: 600;
+  }
+}
+
+/* Optional: fine-tune hamburger menu appearance in dark mode */
+@media (prefers-color-scheme: dark) {
+  .nav-links {
+    background-color: var(--card); /* fallback to card background */
+  }
+
+  .nav-links a {
+    color: var(--text); /* readable on dark */
+  }
+
+  .nav-links .active {
+    color: #28a745 !important;
+  }
+
+  .hamburger {
+    background-color: #28a745;
+  }
+  .hamburger span {
+    background: #fff;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+:root {
+  --border: rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --border: rgba(255, 255, 255, 0.1);
+  }
+}
+
+
+
+
+
+
+
+
+@media (max-width: 768px) {
+  .nav-links .active {
+    background-color: #28a745 !important;
+    color: #fff !important;
   }
 }

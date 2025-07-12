@@ -1,6 +1,6 @@
-/* ===================================================================
-   1.  COLOUR TOKENS
-   =================================================================== */
+/* ================================================================
+   1. COLOUR TOKENS
+================================================================ */
 :root {
   --bg:       #f4fbf6;
   --text:     #111111;
@@ -8,6 +8,7 @@
   --primary:  #0d6efd;
   --success:  #008751;
   --danger:   #dc3545;
+  --muted:    #555555;
 }
 
 [data-theme="dark"] {
@@ -17,19 +18,31 @@
   --primary:  #4c8dff;
   --success:  #1db87a;
   --danger:   #ff6e6e;
+  --muted:    #aaaaaa;
 }
 
-/* ===================================================================
-   2.  GLOBAL BASE
-   =================================================================== */
-body {
+/* ================================================================
+   2. GLOBAL BASE
+================================================================ */
+html, body {
   margin: 0;
+  padding: 0;
   background: var(--bg);
   color: var(--text);
   font-family: "Segoe UI", sans-serif;
   transition: background 0.25s ease, color 0.25s ease;
+  box-sizing: border-box;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/* ================================================================
+   3. LAYOUT / COMPONENT STYLES
+================================================================ */
 .card {
   background: var(--card);
   border-radius: 12px;
@@ -38,17 +51,13 @@ body {
   transition: background 0.25s ease;
 }
 
-/* ===================================================================
-   3.  LAYOUT / COMPONENT STYLES
-   =================================================================== */
-
 .app {
   padding: 2rem;
   max-width: 900px;
   margin: 0 auto;
 }
 
-/* ---------- Hero Section ---------- */
+/* Hero Section */
 .hero-banner {
   position: relative;
   margin: 20px auto;
@@ -72,7 +81,7 @@ body {
   transform: translateX(-50%);
 }
 
-/* ---------- Buttons ---------- */
+/* Buttons */
 .start-btn,
 .auth-btn {
   padding: 0.75rem 1.25rem;
@@ -106,7 +115,7 @@ body {
   color: var(--text);
 }
 
-/* ---------- Categories ---------- */
+/* Categories */
 .categories h2 {
   margin-bottom: 1rem;
   font-size: 1.5rem;
@@ -148,7 +157,7 @@ body {
   text-align: center;
 }
 
-/* ---------- Submit-story form ---------- */
+/* Submit-story form */
 .story-form {
   display: flex;
   flex-direction: column;
@@ -183,16 +192,50 @@ body {
   font-weight: 600;
 }
 
-/* ===================================================================
-   4.  DARK-MODE READABILITY FIX
-   =================================================================== */
-
-body[data-theme="dark"],
-body[data-theme="dark"] .story-page .body {
-  color: #f4f4f4;
+/* ================================================================
+   4. DARK-MODE READABILITY FIX
+================================================================ */
+body[data-theme="dark"] .meta p,
+body[data-theme="dark"] .track-artist,
+body[data-theme="dark"] .thread-meta .comments {
+  color: var(--muted) !important;
 }
 
-body[data-theme="dark"] .meta,
-body[data-theme="dark"] .story-thumb .title {
-  color: #c9c9c9;
+/* ================================================================
+   5. MEDIA QUERY FIXES
+================================================================ */
+@media (max-width: 768px) {
+  .hero-banner {
+    margin: 10px auto;
+  }
+
+  .start-btn,
+  .auth-btn {
+    font-size: 0.95rem;
+    padding: 0.65rem 1rem;
+  }
+
+  .category-card img {
+    height: 140px;
+  }
 }
+
+/* ================================================================
+   6. GLOBAL IMAGE FIX FOR THREAD LIST & POST VIEW
+================================================================ */
+.forum-thread img,
+.forum-post img,
+.thread-img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem auto;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+
+
+
+
+

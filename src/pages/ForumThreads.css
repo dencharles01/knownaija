@@ -96,3 +96,59 @@
   font-weight: bold;
   margin-bottom: 1rem;
 }
+
+
+
+
+/* Make "No threads yet." look nice and accessible */
+.no-threads {
+  font-size: 1rem;
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+
+
+.thread-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 1rem;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.thread-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.thread-card img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.thread-card p {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}

@@ -1,73 +1,111 @@
-// src/pages/AdminStories.js
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
-import { supabase } from "../supabaseClient";
-import "./AdminStories.css"; // keeps the old styles
-
-const ADMIN_EMAIL = "dencharles01@gmail.com";
+import {
+  auth,
+  db,
+  storage,
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc
+} from "../firebase";
+import { ref, deleteObject } from "firebase/storage";
+import "./AdminStories.css";
 
 export default function AdminStories() {
   const nav = useNavigate();
-
   const [view, setView] = useState("pending");
   const [pending, setPending] = useState([]);
   const [approved, setApproved] = useState([]);
   const [loading, setLoading] = useState(true);
   const [preview, setPreview] = useState(null);
 
+  // 🔐 Redirect non-admin users away
   useEffect(() => {
     const user = auth.currentUser;
-    if (!user || user.email !== ADMIN_EMAIL) nav("/");
+    if (!user) return nav("/");
+
+    user.getIdTokenResult().then(token => {
+      if (token.claims.role !== "admin") nav("/");
+    });
   }, [nav]);
 
+  // 🚀 Load stories
   useEffect(() => {
     (async () => {
-      const { data: pend } = await supabase
-        .from("stories")
-        .select("*")
-        .eq("status", "pending")
-        .order("created_at", { ascending: true });
+      try {
+        const pendQuery = query(
+          collection(db, "stories"),
+          where("status", "==", "pending"),
+          orderBy("createdAt", "asc") // ✅ REQUIRES COMPOSITE INDEX
+        );
+        const apprQuery = query(
+          collection(db, "stories"),
+          where("status", "==", "approved"),
+          orderBy("createdAt", "desc") // ✅ REQUIRES COMPOSITE INDEX
+        );
 
-      const { data: appr } = await supabase
-        .from("stories")
-        .select("*")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false });
+        const [pendSnap, apprSnap] = await Promise.all([
+          getDocs(pendQuery),
+          getDocs(apprQuery)
+        ]);
 
-      setPending(pend || []);
-      setApproved(appr || []);
-      setLoading(false);
+        setPending(pendSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        setApproved(apprSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        setLoading(false);
+      } catch (err) {
+        console.error("❌ Failed to load stories:", err.message);
+        alert("Error loading stories. You may need to create a Firestore index.");
+        setLoading(false);
+      }
     })();
   }, []);
 
+  // ✅ Approve or Reject
   async function updateStatus(id, status) {
-    const { error } = await supabase.from("stories").update({ status }).eq("id", id);
-    if (error) return alert(error.message);
+    try {
+      const storyRef = doc(db, "stories", id);
+      await updateDoc(storyRef, { status });
 
-    setPending(p => p.filter(s => s.id !== id));
-    if (status === "approved") {
-      const moved = pending.find(s => s.id === id);
-      if (moved) setApproved(a => [{ ...moved, status }, ...a]);
+      setPending(prev => prev.filter(s => s.id !== id));
+      if (status === "approved") {
+        const moved = pending.find(s => s.id === id);
+        if (moved) setApproved(prev => [{ ...moved, status }, ...prev]);
+      }
+    } catch (err) {
+      alert("Update failed: " + err.message);
     }
   }
 
+  // 🗑 Hard delete story (and image)
   async function hardDelete(id, fromApproved = false) {
     if (!window.confirm("Delete this story permanently?")) return;
 
     const srcArr = fromApproved ? approved : pending;
     const story = srcArr.find(s => s.id === id);
+
     if (story?.coverImage) {
-      const filename = story.coverImage.split("/").pop();
-      await supabase.storage.from("story-covers").remove([filename]);
+      const filename = story.coverImage.split("/").pop().split("?")[0];
+      const imageRef = ref(storage, `story_covers/${filename}`);
+      try {
+        await deleteObject(imageRef);
+      } catch (err) {
+        console.warn("⚠️ Image delete skipped or failed:", err.message);
+      }
     }
 
-    const { error } = await supabase.from("stories").delete().eq("id", id);
-    if (error) return alert("Delete failed: " + error.message);
-
-    if (fromApproved) setApproved(a => a.filter(s => s.id !== id));
-    else setPending(p => p.filter(s => s.id !== id));
+    try {
+      await deleteDoc(doc(db, "stories", id));
+      if (fromApproved) setApproved(prev => prev.filter(s => s.id !== id));
+      else setPending(prev => prev.filter(s => s.id !== id));
+    } catch (err) {
+      alert("Delete failed: " + err.message);
+    }
   }
 
   const list = view === "pending" ? pending : approved;

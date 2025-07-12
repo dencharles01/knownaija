@@ -1,104 +1,154 @@
 // src/components/StorySubmitForm.js
-import { useState } from 'react';
-import { supabase } from '../supabaseClient';
-import './StorySubmitForm.css';
+
+import React, { useState, useEffect } from "react";
+import { auth, db, storage } from "../firebase";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
+import "./StorySubmitForm.css";
 
 const MAX_MB    = 2;
 const MAX_BYTES = MAX_MB * 1_048_576;
 
 export default function StorySubmitForm() {
-  const [title,  setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [tags,   setTags] = useState('');
-  const [body,   setBody] = useState('');
-  const [cover,  setCover] = useState(null);
-  const [msg,    setMsg]   = useState('');
+  const [title,  setTitle]  = useState("");
+  const [author, setAuthor] = useState("");
+  const [tags,   setTags]   = useState("");
+  const [body,   setBody]   = useState("");
+  const [cover,  setCover]  = useState(null);
+  const [msg,    setMsg]    = useState("");
+  const [user,   setUser]   = useState(null);
 
-  /* ───────────────────────── submit ───────────────────────── */
+  // Keep track of current user
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(u => setUser(u));
+    return unsubscribe;
+  }, []);
+
   async function handleSubmit(e) {
     e.preventDefault();
-    setMsg('');
+    setMsg("");
 
-    /* size check */
-    if (cover && cover.size > MAX_BYTES) {
-      setMsg(`Image is too large. Max ${MAX_MB} MB.`);
+    if (!user) {
+      setMsg("You must be logged in to submit a story.");
       return;
     }
 
-    /* 🟢 1. grab session then user */
-    const { data: { session }, error: sesErr } =
-      await supabase.auth.getSession();
-
-    if (sesErr || !session?.user) {
-      console.error('session error', sesErr);
-      setMsg('You must be logged in to submit a story.');
-      return;              // ← still prevents insert if not signed‑in
+    if (cover && cover.size > MAX_BYTES) {
+      setMsg(`Image is too large. Max ${MAX_MB} MB.`);
+      return;
     }
 
-    const user = session.user;          // ✅ guaranteed
-    const userId = user.id;             // uuid we need for owner_id
+    try {
+      let coverUrl = "";
 
-    /* upload cover (optional) */
-    let coverUrl = '';
-    if (cover) {
-      const fileName = `${Date.now()}-${cover.name}`;
-      const { error: uploadErr } = await supabase
-        .storage.from('story-covers')
-        .upload(fileName, cover);
+      // ─── UPLOAD COVER IMAGE ─────────────────────
+      if (cover) {
+        const fileName = `${Date.now()}-${cover.name}`;
+        const imageRef = ref(storage, `story_covers/${fileName}`);
 
-      if (uploadErr) {
-        console.error(uploadErr);
-        setMsg('Cover upload failed. Try again.');
-        return;
+        try {
+          console.log(`⏳ Uploading cover "${cover.name}" (${cover.size} bytes)…`);
+          const snapshot = await uploadBytes(imageRef, cover, {
+            contentType: cover.type,
+          });
+          console.log("✅ uploadBytes snapshot:", snapshot);
+
+          coverUrl = await getDownloadURL(snapshot.ref);
+          console.log("🔗 getDownloadURL:", coverUrl);
+        } catch (uploadErr) {
+          console.error("🚨 Storage upload failed:", uploadErr);
+          setMsg("Cover upload failed: " + uploadErr.message);
+          return;
+        }
       }
 
-      coverUrl = supabase
-        .storage.from('story-covers')
-        .getPublicUrl(fileName).data.publicUrl;
+      // ─── WRITE STORY TO FIRESTORE ───────────────
+      const storyData = {
+        title,
+        author,
+        tags: tags
+          .split(",")
+          .map(t => t.trim())
+          .filter(Boolean),
+        body,
+        coverImage: coverUrl,
+        status: "pending",
+        owner_id: user.uid,
+        createdAt: serverTimestamp(),
+      };
+
+      console.log("⏳ Adding story document:", storyData);
+      await addDoc(collection(db, "stories"), storyData);
+      console.log("✅ Story successfully written!");
+
+      setMsg("Submitted! Awaiting approval.");
+      // reset form
+      setTitle("");
+      setAuthor("");
+      setTags("");
+      setBody("");
+      setCover(null);
+    } catch (err) {
+      console.error("🚨 Submission failed:", err);
+      setMsg("Submission failed: " + err.message);
     }
-
-    /* 🟢 2. insert row including owner_id */
-    const { error } = await supabase.from('stories').insert([{
-      title,
-      author,
-      body,
-      tags: tags.split(',').map(t => t.trim()).filter(Boolean),
-      coverImage: coverUrl,
-      status: 'pending',
-      owner_id: userId          // ← satisfies RLS
-    }]);
-
-    if (error) {
-      console.error('insert error', error);
-      setMsg(`Submission failed: ${error.message}`);
-      return;
-    }
-
-    setMsg('Submitted! Awaiting approval.');
-    setTitle(''); setAuthor(''); setTags(''); setBody(''); setCover(null);
   }
-  /* ─────────────────────────────────────────────────────────── */
 
   return (
     <form className="story-form" onSubmit={handleSubmit}>
-      <input  value={title}  onChange={e=>setTitle(e.target.value)}
-              placeholder="Story title" required />
-      <input  value={author} onChange={e=>setAuthor(e.target.value)}
-              placeholder="Author name" required />
-      <input  value={tags}   onChange={e=>setTags(e.target.value)}
-              placeholder="Tags (comma separated)" />
-      <textarea rows={8} value={body}
-                onChange={e=>setBody(e.target.value)}
-                placeholder="Write your story here…" required />
+      <input
+        type="text"
+        placeholder="Story title"
+        value={title}
+        onChange={e => setTitle(e.target.value)}
+        required
+      />
+
+      <input
+        type="text"
+        placeholder="Author name"
+        value={author}
+        onChange={e => setAuthor(e.target.value)}
+        required
+      />
+
+      <input
+        type="text"
+        placeholder="Tags (comma separated)"
+        value={tags}
+        onChange={e => setTags(e.target.value)}
+      />
+
+      <textarea
+        rows={8}
+        placeholder="Write your story here…"
+        value={body}
+        onChange={e => setBody(e.target.value)}
+        required
+      />
 
       <label className="file-label">
         Cover image (optional)&nbsp;
-        <input type="file" accept="image/png, image/jpeg"
-               onChange={e => setCover(e.target.files[0])} />
-        <span className="hint">PNG / JPG • max {MAX_MB} MB</span>
+        <input
+          type="file"
+          accept="image/png, image/jpeg"
+          onChange={e => setCover(e.target.files[0] || null)}
+        />
+        <span className="hint">PNG / JPG • max {MAX_MB} MB</span>
       </label>
 
-      <button disabled={!title || !author || !body}>Submit Story</button>
+      <button disabled={!title || !author || !body}>
+        Submit Story
+      </button>
+
       {msg && <p className="status-msg">{msg}</p>}
     </form>
   );

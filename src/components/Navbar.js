@@ -1,7 +1,3 @@
-// ───────────────────────────────────────────────
-// src/components/Navbar.js
-//   Global navigation bar (desktop + mobile)
-// ───────────────────────────────────────────────
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -13,8 +9,8 @@ import {
   doc,
 } from "../firebase";
 
-import ThemeToggle  from "./ThemeToggle";
-import maleAvatar   from "../assets/avatars/male.png";
+import ThemeToggle from "./ThemeToggle";
+import maleAvatar from "../assets/avatars/male.png";
 import femaleAvatar from "../assets/avatars/female.png";
 
 import "./Navbar.css";
@@ -25,10 +21,9 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [user,      setUser]    = useState(null);
-  const [profile,   setProfile] = useState(null);
+  const [user, setUser]         = useState(null);
+  const [profile, setProfile]   = useState(null);
 
-  /* ───────── listen to Firebase auth ───────── */
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (cu) => {
       setUser(cu);
@@ -50,19 +45,17 @@ export default function Navbar() {
     navigate("/");
   };
 
-  /* ───────── build menu items ───────── */
   const items = [
-    { to: "/",        label: "Home" },
+    { to: "/",        label: "Home"    },
     { to: "/quiz",    label: "Quizzes" },
     { to: "/profile", label: "Profile" },
-    { to: "/radio",   label: "Radio" },
-    { to: "/about",   label: "About" },
+    { to: "/radio",   label: "Radio"   },
+    { to: "/about",   label: "About"   },
   ];
 
-  // only show these to the admin
   if (user?.email === ADMIN_EMAIL) {
-    items.push({ to: "/submit-story",  label: "Submit Story" });
-    items.push({ to: "/admin-stories", label: "Admin" });
+    items.push({ to: "/submit-story",  label: "Submit Story"  });
+    items.push({ to: "/admin-stories", label: "Admin"         });
   }
 
   return (
@@ -104,7 +97,7 @@ export default function Navbar() {
             <ThemeToggle />
           </li>
 
-          {/* Mobile-only auth button */}
+          {/* Mobile-only auth buttons */}
           <li className="mobile-auth">
             {user ? (
               <button
@@ -117,15 +110,25 @@ export default function Navbar() {
                 Log Out
               </button>
             ) : (
-              <button
-                className="btn secondary w-full"
-                onClick={() => {
-                  navigate("/auth");
-                  setMenuOpen(false);
-                }}
-              >
-                Log In
-              </button>
+              <>
+                <Link to="/login">
+                  <button
+                    className="btn secondary w-full"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Log In
+                  </button>
+                </Link>
+                <Link to="/register">
+                  <button
+                    className="btn secondary w-full"
+                    style={{ marginTop: 8 }}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Sign Up
+                  </button>
+                </Link>
+              </>
             )}
           </li>
         </ul>
@@ -139,18 +142,25 @@ export default function Navbar() {
                 alt="avatar"
                 className="avatar-icon border"
               />
-              <span>{user.displayName || user.email}</span>
-              <button className="btn secondary" onClick={handleLogout}>
+              <span style={{ margin: "0 8px" }}>
+                {user.displayName || user.email}
+              </span>
+              <button
+                className="btn secondary"
+                onClick={handleLogout}
+              >
                 Log Out
               </button>
             </>
           ) : (
-            <button
-              className="btn secondary"
-              onClick={() => navigate("/auth")}
-            >
-              Log In
-            </button>
+            <>
+              <Link to="/login">
+                <button className="btn secondary">Log In</button>
+              </Link>
+              <Link to="/register">
+                <button className="btn primary">Sign Up</button>
+              </Link>
+            </>
           )}
         </div>
       </div>

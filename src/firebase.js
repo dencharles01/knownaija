@@ -9,7 +9,6 @@ import {
   signInWithPopup,
   onAuthStateChanged,
   signOut,
-  // Optional legacy email/password methods if needed later
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendEmailVerification,
@@ -34,20 +33,25 @@ import {
   orderBy,
 } from "firebase/firestore";
 
+import {
+  getStorage // ✅ Import Firebase Storage
+} from "firebase/storage";
+
 // ▸ 1. Firebase Project Config (from console)
 const firebaseConfig = {
   apiKey:            "AIzaSyAWzcwwae4pHHg8JYXyFa-6KmVMBtrJBM0",
   authDomain:        "knownaijaapp.firebaseapp.com",
   projectId:         "knownaijaapp",
-  storageBucket:     "knownaijaapp.appspot.com",
+  storageBucket:     "knownaijaapp.firebasestorage.app",
   messagingSenderId: "1001997550324",
   appId:             "1:1001997550324:web:e3b2bb08f0c077e59e94a1",
 };
 
 // ▸ 2. Init Firebase
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getFirestore(app);
+const app     = initializeApp(firebaseConfig);
+const auth    = getAuth(app);
+const db      = getFirestore(app);
+const storage = getStorage(app); // ✅ Init Firebase Storage
 
 // ▸ 3. Google Auth Provider
 const googleProvider = new GoogleAuthProvider();
@@ -56,15 +60,16 @@ const googleProvider = new GoogleAuthProvider();
 export {
   auth,
   db,
+  storage, // ✅ Export Storage
   googleProvider,
   signInWithPopup,
   onAuthStateChanged,
   signOut,
-  signInWithEmailAndPassword,     // optional
-  createUserWithEmailAndPassword, // optional
-  sendEmailVerification,          // optional
-  sendPasswordResetEmail,         // optional
-  updateProfile,                  // optional
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  updateProfile,
 
   // Firestore tools
   doc,

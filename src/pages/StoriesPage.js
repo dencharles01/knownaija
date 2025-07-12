@@ -1,28 +1,42 @@
 // src/pages/StoriesPage.js
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "../supabaseClient";
+import {
+  db,
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs
+} from "../firebase";
 import "./StoriesPage.css";
 
 export default function StoriesPage() {
-  const [stories, setStories]   = useState([]);
-  const [loading, setLoading]   = useState(true);
-
-  /* ───────── fetch approved stories ───────── */
-  useEffect(() => {
-    (async () => {
-      const { data, error } = await supabase
-        .from("stories")
-        .select("*")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false });
-
-      if (!error) setStories(data);
-      setLoading(false);
-    })();
-  }, []);
-
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const placeholder = "/placeholder_cover.jpg";
+
+  useEffect(() => {
+    const fetchStories = async () => {
+      try {
+        const q = query(
+          collection(db, "stories"),
+          where("status", "==", "approved"),
+          orderBy("createdAt", "desc")
+        );
+        const snapshot = await getDocs(q);
+        const results = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setStories(results);
+      } catch (err) {
+        console.error("Error loading stories:", err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStories();
+  }, []);
 
   return (
     <main className="stories-page">

@@ -36,6 +36,29 @@
   color: var(--text, #111);
 }
 
+/* ========== Thread Image ========== */
+.thread-image {
+  margin-top: 1.25rem;
+  position: relative;
+}
+.thread-img {
+  max-width: 100%;
+  border-radius: 8px;
+  display: block;
+}
+.remove-image-btn {
+  margin-top: 0.4rem;
+  background: transparent;
+  border: none;
+  color: #b00;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 2px 6px;
+}
+.remove-image-btn:hover {
+  color: #f00;
+}
+
 /* -------------------------------------------------------------------- */
 /*                              Comments                                */
 /* -------------------------------------------------------------------- */
@@ -99,9 +122,32 @@
 }
 
 .comment-bubble p {
-  color: var(--text, #222);  /* was too grey — now readable */
+  color: var(--text, #222);
   margin: 0.25rem 0 0.5rem;
   line-height: 1.5;
+}
+
+/* ===== Comment Image ===== */
+.comment-img-wrapper {
+  margin-top: 0.5rem;
+  position: relative;
+}
+.comment-img {
+  max-width: 100%;
+  border-radius: 6px;
+  display: block;
+}
+.comment-img-remove-btn {
+  margin-top: 0.3rem;
+  background: none;
+  border: none;
+  color: #b00;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px 4px;
+}
+.comment-img-remove-btn:hover {
+  color: #f00;
 }
 
 /* Delete button inside each comment */
@@ -141,6 +187,11 @@
   font-style: italic;
 }
 
+.comment-form input[type="file"] {
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+}
+
 .comment-form button {
   margin-top: 0.6rem;
   padding: 0.55rem 1.8rem;
@@ -153,7 +204,9 @@
   transition: opacity 0.25s;
 }
 
-.comment-form button:hover:not(:disabled) { opacity: 0.9; }
+.comment-form button:hover:not(:disabled) {
+  opacity: 0.9;
+}
 
 .comment-form button:disabled {
   opacity: 0.75;
@@ -244,3 +297,92 @@
     padding: 0.7rem 0.9rem;
   }
 }
+
+
+
+
+
+/* -------------------------------------------------------------------- */
+/*                       Image removal button                           */
+/* -------------------------------------------------------------------- */
+
+.remove-image-btn {
+  margin-top: 0.4rem;
+  background: #f97316; /* orange */
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+
+.remove-image-btn:hover {
+  background: #ea580c;
+}
+
+/* Wrapper for comment image + remove button */
+.comment-image-wrapper {
+  margin-top: 0.5rem;
+}
+
+.comment-img {
+  max-width: 100%;
+  border-radius: 6px;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+/* For thread image */
+.thread-image {
+  margin-top: 1rem;
+}
+
+.thread-img {
+  max-width: 100%;
+  border-radius: 8px;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+
+
+
+
+
+
+
+
+/* Shared image styling */
+.thread-img,
+.comment-img {
+  max-width: 100%;
+  max-height: 400px;
+  display: block;
+  margin: 1rem auto;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+
+.post-body {
+  margin: 1rem 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+
+
+
+
+
+
+
+
+
+

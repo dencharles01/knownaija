@@ -20,8 +20,26 @@ export default function ForumThreads() {
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState('');
+  const [theme, setTheme] = useState(
+    document.documentElement.getAttribute('data-theme') || 'light'
+  );
 
-  // 🔁 Get forum title from Firestore
+  // 🌙 Listen for theme changes
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      setTheme(currentTheme);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // 🔁 Get forum title
   useEffect(() => {
     const fetchCategoryTitle = async () => {
       try {
@@ -31,11 +49,11 @@ export default function ForumThreads() {
           const data = docSnap.data();
           setTitle(data?.title?.trim() || categoryId);
         } else {
-          setTitle(categoryId); // fallback to slug
+          setTitle(categoryId);
         }
       } catch (err) {
         console.error('Error fetching title:', err);
-        setTitle(categoryId); // fallback to slug
+        setTitle(categoryId);
       }
     };
 
@@ -65,7 +83,16 @@ export default function ForumThreads() {
     <main className="thread-list-page">
       <h1 className="page-title">Threads in {title}</h1>
 
-      {threads.length === 0 && <p>No threads yet.</p>}
+      {threads.length === 0 && (
+        <p
+          className="no-threads"
+          style={{
+            color: theme === 'dark' ? '#28a745' : '#111',
+          }}
+        >
+          No threads yet.
+        </p>
+      )}
 
       <ul className="thread-list">
         {threads.map(t => (
@@ -73,13 +100,29 @@ export default function ForumThreads() {
             <Link to={`/forums/thread/${t.id}`} className="thread-link">
               <h3 className="thread-title">{t.title}</h3>
 
+              {t.thumbnail && (
+                <img
+                  src={t.thumbnail}
+                  alt="Thread visual"
+                  className="thread-thumbnail"
+                />
+              )}
+
+              {t.body && (
+                <p className="thread-body-preview">
+                  {t.body.length > 200 ? t.body.slice(0, 200) + '…' : t.body}
+                </p>
+              )}
+
               <div className="thread-meta">
                 <span className="score">▲ {t.score ?? 0}</span>
                 <span className="comments">
                   {t.commentCount ?? 0} comments
                 </span>
                 <span className="date">
-                  {t.createdAt?.toDate()?.toLocaleDateString('en-GB')}
+                  {t.createdAt?.toDate
+                    ? t.createdAt.toDate().toLocaleDateString('en-GB')
+                    : ''}
                 </span>
               </div>
             </Link>

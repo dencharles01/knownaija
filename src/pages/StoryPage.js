@@ -1,7 +1,12 @@
 // src/pages/StoryPage.js
+
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { supabase } from "../supabaseClient";
+import {
+  db,
+  doc,
+  getDoc
+} from "../firebase";
 import "./StoryPage.css";
 
 const fallback = "/placeholder_cover.jpg";
@@ -12,17 +17,21 @@ export default function StoryPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
-      const { data, error } = await supabase
-        .from("stories")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-      if (!error) setStory(data);
-      setLoading(false);
+    async function loadStory() {
+      try {
+        const ref = doc(db, "stories", id);
+        const snapshot = await getDoc(ref);
+        if (snapshot.exists()) {
+          setStory({ id: snapshot.id, ...snapshot.data() });
+        }
+      } catch (err) {
+        console.error("Error loading story:", err.message);
+      } finally {
+        setLoading(false);
+      }
     }
-    load();
+
+    loadStory();
   }, [id]);
 
   if (loading) return <main className="story-page"><p>Loading…</p></main>;
@@ -46,7 +55,7 @@ export default function StoryPage() {
         </p>
 
         <div className="body">
-          {story.body.split("\n").map((p, i) => (
+          {story.body?.split("\n").map((p, i) => (
             <p key={i}>{p}</p>
           ))}
         </div>

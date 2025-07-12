@@ -1,0 +1,117 @@
+/* Quiz.css */
+
+:root {
+  /* You already have --text defined by your theme toggle */
+}
+
+/* wrap entire quiz for layout */
+.quiz-container {
+  padding: 2rem;
+  max-width: 700px;
+  margin: auto;
+  text-align: center;
+}
+
+/* header area */
+.quiz-header h2 {
+  color: var(--text);
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* subtitle / question count */
+.quiz-header p {
+  color: var(--text);
+  opacity: 0.8;
+  margin: 0;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* progress bar container */
+.quiz-progress {
+  background: var(--card);
+  border-radius: 8px;
+  overflow: hidden;
+  height: 12px;
+  margin: 1rem 0;
+}
+
+.quiz-progress .fill {
+  background: var(--success);
+  height: 100%;
+  width: 0; /* set via inline style */
+}
+
+/* timer */
+.quiz-timer {
+  color: var(--danger);
+  font-weight: 600;
+  margin: 1rem 0;
+}
+
+/* bonus streak */
+.quiz-bonus {
+  color: var(--warning);
+  margin: 0.5rem 0;
+}
+
+/* question text */
+.quiz-question {
+  font-size: 1.15rem;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+/* options */
+.quiz-option {
+  display: block;
+  margin: 0.4rem auto;
+  padding: 0.55rem 1.2rem;
+  min-width: 240px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 1rem;
+}
+
+/* correct / wrong styling will still come via your inline bg & color */
+.quiz-option[disabled] {
+  cursor: default;
+}
+
+/* action buttons */
+.quiz-actions {
+  margin-top: 1.2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.quiz-actions .btn {
+  padding: 0.55rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* finish / next / end button variants */
+.quiz-actions .next-btn {
+  background: var(--success);
+  color: #fff;
+  border: none;
+}
+
+.quiz-actions .end-btn {
+  background: #fff;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+.quiz-question {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 1rem 0;
+  text-align: center;
+  color: #28a745 !important; /* Green - visible on both themes */
+}

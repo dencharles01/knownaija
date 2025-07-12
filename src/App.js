@@ -12,17 +12,19 @@ import Profile        from "./pages/Profile";
 import Leaderboard    from "./pages/Leaderboard";
 import About          from "./pages/About";
 import Auth           from "./pages/Auth";
+import Register       from "./pages/Register";
 import VerifyNotice   from "./pages/VerifyNotice";
 import ForgotPassword from "./pages/ForgotPassword";
 import Disclaimer     from "./pages/Disclaimer";
 import Privacy        from "./pages/Privacy";
 import Terms          from "./pages/Terms";
+import Login from './pages/Login';
 
 /* Stories */
-import StoriesPage    from "./pages/StoriesPage";
-import StoryPage      from "./pages/StoryPage";
-import SubmitStory    from "./pages/SubmitStory";
-import AdminStories   from "./pages/AdminStories";
+import StoriesPage  from "./pages/StoriesPage";
+import StoryPage    from "./pages/StoryPage";
+import SubmitStory  from "./pages/SubmitStory";
+import AdminStories from "./pages/AdminStories";
 
 /* Radio */
 import RadioPage from "./pages/RadioPage";
@@ -41,7 +43,7 @@ import RadioBadge from "./components/RadioBadge";
 /* Utils */
 import ProtectedRoute from "./utils/ProtectedRoute";
 
-/* Optional loading component */
+// Optional loading component
 const Loading = () => (
   <div style={{ padding: "2rem", textAlign: "center" }}>
     <h2>Loading...</h2>
@@ -76,7 +78,10 @@ export default function App() {
         <Route path="/disclaimer"      element={<Disclaimer />} />
         <Route path="/privacy"         element={<Privacy />} />
         <Route path="/terms"           element={<Terms />} />
-        <Route path="/quiz"            element={<Quiz />} />
+        <Route path="/quiz"            element={<Quiz />} /> {/* ✅ PUBLIC */}
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/register" element={<Register />} />
 
         {/* Forum: Public view, protected post */}
         <Route path="/forums"                     element={<ForumCategories />} />

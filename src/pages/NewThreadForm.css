@@ -71,3 +71,29 @@
   color: #d93025;
   font-weight: 600;
 }
+
+
+
+
+
+/* Shared image styling */
+.thread-img,
+.comment-img {
+  max-width: 100%;
+  max-height: 400px;
+  display: block;
+  margin: 1rem auto;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+
+
+
+
+
+.thread-form input[type="file"] {
+  color: var(--text);
+  background: var(--card);
+}

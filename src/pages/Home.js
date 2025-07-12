@@ -1,7 +1,16 @@
 // src/pages/Home.js
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import {
+  db,
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs
+} from "../firebase";
 import "../App.css";
 
 /* images */
@@ -19,14 +28,49 @@ import ForumPromo        from "../components/ForumPromo";
 import DailyQuoteSection from "../components/DailyQuoteSection";
 import StoriesStrip      from "../components/StoriesStrip/StoriesStrip";
 
-/* Supabase */
-import { supabase } from "../supabaseClient";
-
 export default function Home() {
   const nav = useNavigate();
 
-  // User-selected difficulty (default: Easy)
+  // Difficulty setting for quiz
   const [difficulty, setDifficulty] = useState("Easy");
+
+  // Story state
+  const [stories, setStories] = useState([]);
+  const [loadingStories, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStories = async () => {
+      try {
+        const q = query(
+          collection(db, "stories"),
+          where("status", "==", "approved"),
+          orderBy("createdAt", "desc")
+        );
+        const snapshot = await getDocs(q);
+        const results = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setStories(results);
+      } catch (err) {
+        console.error("Error fetching stories:", err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStories();
+  }, []);
+
+  const displayStories =
+    loadingStories && stories.length === 0
+      ? [
+          {
+            id: 0,
+            title: "Loading stories…",
+            author: "",
+            tags: [],
+            coverImage: "/placeholder_cover.jpg"
+          }
+        ]
+      : stories;
 
   // Featured quiz categories
   const categories = [
@@ -36,36 +80,8 @@ export default function Home() {
     { name: "Food",         image: food    },
     { name: "Languages",    image: igbo    },
     { name: "Geography",    image: map     },
-    { name: "Naija Sports", image: sports  },
+    { name: "Naija Sports", image: sports  }
   ];
-
-  // Story state
-  const [stories, setStories]        = useState([]);
-  const [loadingStories, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      const { data, error } = await supabase
-        .from("stories")
-        .select("*")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false });
-
-      if (!error) setStories(data);
-      setLoading(false);
-    })();
-  }, []);
-
-  const displayStories =
-    loadingStories && stories.length === 0
-      ? [{
-          id: 0,
-          title: "Loading stories…",
-          author: "",
-          tags: [],
-          coverImage: "/placeholder_cover.jpg",
-        }]
-      : stories;
 
   return (
     <>
@@ -79,10 +95,9 @@ export default function Home() {
       </Helmet>
 
       <div className="app">
-        {/* Floating forum badge */}
         <ForumBadge />
 
-        {/* 🌄 Hero banner */}
+        {/* Hero Section */}
         <header className="hero-section">
           <div className="hero-banner">
             <img src="/hero-banner.png" alt="KnowNaija Banner" className="hero-banner-image" />
@@ -97,24 +112,23 @@ export default function Home() {
           </div>
         </header>
 
-        {/* 🏠 Forum promo */}
+        {/* Forum Promo */}
         <div style={{ margin: "56px auto 64px" }}>
           <ForumPromo />
         </div>
 
-        {/* 🇳🇬 Proverb */}
+        {/* Proverb Section */}
         <div className="proverb-wrapper">
           <DailyQuoteSection />
         </div>
 
-        {/* 📖 Stories */}
+        {/* Stories Strip */}
         <StoriesStrip stories={displayStories} />
 
-        {/* 📚 Featured categories */}
+        {/* Featured Quiz Categories */}
         <section className="categories">
           <h2 style={{ textAlign: "center" }}>Featured Quiz</h2>
 
-          {/* 🔽 Difficulty Selector */}
           <div style={{ textAlign: "center", marginBottom: "1rem", color: "#116e49" }}>
             <label htmlFor="diff" style={{ marginRight: "0.5rem", color: "#116e49" }}>
               Select Difficulty:
@@ -136,7 +150,6 @@ export default function Home() {
             </select>
           </div>
 
-          {/* Category cards */}
           <div className="category-grid">
             {categories.map(({ name, image }) => (
               <div
