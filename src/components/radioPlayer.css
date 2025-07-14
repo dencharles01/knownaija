@@ -1,131 +1,119 @@
-/* src/components/radioPlayer.css */
-
-/* ───────────────────────────────────────────────────── */
-/* design tokens & globals                             */
-/* ───────────────────────────────────────────────────── */
+/* ───────────────────────────────────────────── */
+/* simple colour tokens                          */
+/* ───────────────────────────────────────────── */
 :root {
-  --primary: #000;     /* progress fill & active shuffle bg */
-  --soft:    #e9f0ed;  /* button background */
+  --primary: #116e49;           /* KnowNaija green */
   --radius:  14px;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Inter", sans-serif;
-}
-
-/* ───────────────────────────────────────────────────── */
-/* main container & headings                            */
-/* ───────────────────────────────────────────────────── */
+/* ─── layout wrapper ─── */
 .radio {
   max-width: 900px;
   margin: 2rem auto;
+  padding: 0 1rem;
 }
 
+/* ─── headings ─── */
 .radio h1 {
   text-align: center;
   margin-bottom: 1.5rem;
 }
 
-/* ───────────────────────────────────────────────────── */
-/* track info & cover art                               */
-/* ───────────────────────────────────────────────────── */
+/* ─── now-playing panel ─── */
 .content {
   display: flex;
   justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
   align-items: center;
 }
 
-.meta h2 {
-  margin: 0 0 .25rem 0;
-  font-size: 1.25rem;
-}
-
-.meta p {
-  margin: 0 0 1rem 0;
-  color: #555;
-}
+.meta h2 { margin: 0 0 .25rem 0; font-size: 1.25rem; }
+.meta p  { margin: 0 0 1rem 0; color: #555; }
 
 .cover {
-  width: 230px;
-  height: 230px;
+  width: 200px;
+  height: 200px;
   object-fit: cover;
   border-radius: var(--radius);
 }
 
-/* ───────────────────────────────────────────────────── */
-/* generic button styles                                */
-/* ───────────────────────────────────────────────────── */
+/* ─── buttons ─── */
 .btn {
-  padding: .6rem 1.2rem;
-  border: none;
-  border-radius: var(--radius);
-  background: var(--soft);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background .2s, color .2s;
-}
-
-.btn.secondary {
-  margin: 0 .25rem;
-  padding: .5rem 1rem;  /* slightly tigher */
-}
-
-/* hovered secondary when not active */
-.btn.secondary:not(.active):hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-/* active shuffle button */
-.btn.secondary.active {
   background: var(--primary);
   color: #fff;
+  padding: 0.65rem 1.25rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.25s;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* add the 🔀 icon in front of active shuffle */
-.btn.secondary.active::before {
-  content: "🔀 ";
-}
+.btn:hover        { background: #0d5c3d; }
+.btn:focus,
+.btn:active       { background: var(--primary); outline: none; }
 
-/* ───────────────────────────────────────────────────── */
-/* progress bar                                         */
-/* ───────────────────────────────────────────────────── */
+.btn.secondary    { background: var(--primary); }
+
+/* ─── progress bar ─── */
 .progress {
   position: relative;
-  height: .5rem;
-  background: #d9e3de;
+  height: 6px;
+  background: #dfe6e0;
   border-radius: var(--radius);
   margin: 2rem 0 1.5rem;
 }
-
 .progress > span {
   display: block;
   height: 100%;
-  background: var(--primary);
+  background: #000;
   border-radius: var(--radius);
 }
-
 .progress small {
   position: absolute;
   right: 0;
-  top: -1.75rem;
-  font-size: .85rem;
+  top: -1.5rem;
+  font-size: 0.8rem;
 }
 
-/* ───────────────────────────────────────────────────── */
-/* action buttons (shuffle / prev / next)               */
-/* ───────────────────────────────────────────────────── */
+/* ─── previous / next button row ─── */
 .actions {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: .75rem;
-  margin-top: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
+/* ─── track list ─── */
+.tracklist {
+  margin-top: 2rem;
+  list-style: none;
+  padding: 0;
+  border: 1px solid #e1e1e1;
+  border-radius: var(--radius);
+  max-height: 320px;          /* scroll if long */
+  overflow-y: auto;
+}
 
+.tracklist li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.tracklist li:last-child { border-bottom: none; }
 
+.tracklist li:hover      { background: #f5faf7; }
+.tracklist li.active     { background: var(--primary); color: #fff; }
 
+.t-title  { font-weight: 600; }
+.t-artist { font-size: 0.9rem; opacity: 0.8; }
 
+/* ─── mobile tweaks ─── */
+@media (max-width: 600px) {
+  .content { flex-direction: column; text-align: center; }
+  .cover   { width: 160px; height: 160px; }
+}
