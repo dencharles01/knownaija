@@ -103,5 +103,46 @@
     "src": "/radio/no-stopping-me.mp3",
     "cover": "/radio/no-stopping-me.jpg",
     "preload": "none"
+  },
+
+   {
+    "title": "Made for This",
+    "artist": "KnowNaija",
+    "src": "/radio/made_for_this.mp3",
+    "cover": "/radio/made_for_this.jpg",
+    "preload": "none"
+  },
+
+
+
+
+{
+    "title": "Lowkey Heavy",
+    "artist": "KnowNaija",
+    "src": "/radio/lowkey _heavy.mp3",
+    "cover": "/radio/lowkey _heavy.jpg",
+    "preload": "none"
+  },
+
+
+{
+    "title": "Shine Small Small",
+    "artist": "KnowNaija",
+    "src": "/radio/shine_small_small.mp3",
+    "cover": "/radio/shine_small_small.jpg",
+    "preload": "none"
+  },
+
+
+  {
+    "title": "Silent Moves, Loud Life",
+    "artist": "KnowNaija",
+    "src": "/radio/silent_move.mp3",
+    "cover": "/radio/silent_move.jpg",
+    "preload": "none"
   }
+
+
+
+
 ]
