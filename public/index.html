@@ -32,6 +32,29 @@
     gtag('js', new Date());
     gtag('config', 'G-QC3H4HRV9M');
   </script>
+
+  <!-- Cookie Consent -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+  <script>
+    window.addEventListener("load", function(){
+      window.cookieconsent.initialise({
+        palette: {
+          popup: { background: "#000000" },
+          button: { background: "#008753" }
+        },
+        theme: "classic",
+        position: "bottom",
+        content: {
+          message: "KnowNaija uses cookies to personalise content and analyse traffic.",
+          dismiss: "OK, Got it!",
+          link: "Learn more",
+          href: "/privacy"
+        }
+      })
+    });
+  </script>
+
 </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
