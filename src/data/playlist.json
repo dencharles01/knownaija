@@ -140,7 +140,64 @@
     "src": "/radio/silent_move.mp3",
     "cover": "/radio/silent_move.jpg",
     "preload": "none"
+  },
+
+
+   {
+    "title": "Pressure No Fit Fold Me",
+    "artist": "KnowNaija",
+    "src": "/radio/pressure_no_fit.mp3",
+    "cover": "/radio/pressure_no_fit.jpg",
+    "preload": "none"
+  },
+
+
+   {
+    "title": "No Peace, Still Power",
+    "artist": "KnowNaija",
+    "src": "/radio/no_peace_still_power.mp3",
+    "cover": "/radio/no_peace_still_power.jpg",
+    "preload": "none"
+  },
+
+   {
+    "title": "Loud in My Silence",
+    "artist": "KnowNaija",
+    "src": "/radio/loud_in_my_silence.mp3",
+    "cover": "/radio/loud_in_my_silence.jpg",
+    "preload": "none"
+  },
+
+   {
+    "title": "Watchin’ My Steps",
+    "artist": "KnowNaija",
+    "src": "/radio/watchin_my_steps.mp3",
+    "cover": "/radio/watchin_my_steps.jpg",
+    "preload": "none"
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
